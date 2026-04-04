@@ -48,28 +48,28 @@ Citizens who provide information that helps solve cases or find missing persons 
 - Amber Alert: government-only, slow
 - No platform combines all these layers globally
 
-## Tech Stack (Planned) — 100% Free / Open Source
+## Tech Stack (Planned) — 100% Free, Open-Source, Self-Hosted
 
-| Layer | Technology | Cost | Why |
-|-------|-----------|------|-----|
-| Mobile | React Native / Expo | Free | iOS + Android from one codebase |
-| Backend | Node.js + Fastify | Free | Fast, lightweight, huge ecosystem |
-| Database | Supabase (PostgreSQL + PostGIS) | Free tier | Geo queries, auth, realtime, storage — all in one |
-| Auth | Supabase Auth | Free (50k MAU) | Email/phone OTP, social login, JWT — built in |
-| Realtime | Supabase Realtime | Free tier | WebSocket push for alerts, sightings, chat |
-| Push notifications | Firebase Cloud Messaging | Free (unlimited) | Push to iOS + Android |
-| File storage | Supabase Storage | Free (1GB) | Photos, evidence — with signed URLs |
-| Image matching | TensorFlow.js | Free | On-device or server-side image similarity |
-| Hosting (API) | Railway / Render / Fly.io | Free tier | Auto-deploy from GitHub |
-| Hosting (Web) | Vercel / Cloudflare Pages | Free | Admin dashboard, landing page |
-| CDN | Cloudflare | Free | Global CDN for static assets |
-| CI/CD | GitHub Actions | Free (public repo) | Automated testing and deployment |
-| Email | Resend | Free (100/day) | Transactional emails, notifications |
-| Maps | OpenStreetMap + Leaflet | Free | No Google Maps fees |
-| Monitoring | Grafana Cloud | Free tier | Dashboards, alerts |
-| DNS + SSL | Cloudflare | Free | HTTPS, DDoS protection |
+> Compliant with Russian data localization law (242-ФЗ). No vendor lock-in.
 
-> Zero cost to launch. Paid tiers only needed at scale (thousands of users).
+| Layer | Technology | License |
+|-------|-----------|---------|
+| Mobile | React Native / Expo | MIT |
+| Backend | Node.js + Fastify | MIT |
+| Database | PostgreSQL 16 + PostGIS 3 | Free |
+| Cache & Queues | Redis / Valkey + BullMQ | BSD-3 |
+| File Storage | MinIO (S3-compatible) | AGPL-3 |
+| Realtime | Socket.IO | MIT |
+| Auth | Passport.js + JWT + bcrypt | MIT |
+| Push Notifications | Firebase Cloud Messaging | Free (unlimited) |
+| Reverse Proxy | Caddy (auto-SSL) | Apache-2 |
+| Maps | OpenStreetMap + Leaflet | ODbL / BSD-2 |
+| CI/CD | GitHub Actions | Free (public repo) |
+| Monitoring | Prometheus + Grafana | Apache-2 |
+| Deployment | Docker Compose | Apache-2 |
+
+> **Dev cost: $0** (runs locally). **Production: ~500 ₽/мес (~$5)** for a Russian VPS.
+> All software is free forever — you only pay for server hardware.
 
 ## Documentation
 
