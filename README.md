@@ -57,10 +57,34 @@ Citizens who provide information that helps solve cases or find missing persons 
 - Push: Firebase Cloud Messaging
 - Privacy: end-to-end encryption for reports
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Feature Specification](docs/CONCEPT.md) | Detailed feature spec for all modules (EN/RU) |
+| [System Architecture](docs/ARCHITECTURE.md) | Technical architecture overview (EN/RU) |
+| [User Scenarios](docs/SCENARIOS.md) | 4 detailed user scenarios (EN/RU) |
+| [Data Model](docs/DATA-MODEL.md) | Complete data model — 200+ fields extracted from 2019 brainstorming (EN/RU) |
+| [Localization Guide](docs/LOCALIZATION.md) | Country adaptation guide — Egypt & Russia profiles, expansion checklist (EN/RU) |
+
+### Reference Data (Egypt — first country profile)
+
+| Dataset | Records | Source |
+|---------|---------|--------|
+| [Administrative Divisions](data/reference/egypt/administrative-divisions.json) | 27 governorates, 47+ districts | CAPMAS 2014 |
+| [Governorates (Bilingual)](data/reference/egypt/governorates-bilingual.json) | 27 entries (AR/EN) | CAPMAS 2014 |
+| [Neighborhoods](data/reference/egypt/neighborhoods.json) | 157 areas (Alexandria) | Brainstorming 2019 |
+| [Vehicle Registration](data/reference/egypt/vehicles.json) | 27 license types, 158 traffic units | Brainstorming 2019 |
+| [Education System](data/reference/egypt/education.json) | 9 levels, 16 job categories | Brainstorming 2019 |
+| [Driver's Licenses](data/reference/egypt/driver-licenses.json) | 12 types | Brainstorming 2019 |
+
 ## Status
 
 - [x] Concept design
 - [x] Feature specification
+- [x] Data model (extracted from 2019 brainstorming, modernized)
+- [x] Country profile: Egypt (reference implementation)
+- [x] Country profile: Russia (documented)
 - [ ] Prototype
 - [ ] MVP
 - [ ] Beta testing

@@ -1,0 +1,167 @@
+{
+  "country": "EG",
+  "governorates": [
+    {
+      "name_en": "Ad-Daqahiyah [Dakahlia]",
+      "abbreviation": "DQH",
+      "name_ar": "الدقهلية",
+      "capital": "Al-Manṣūrah"
+    },
+    {
+      "name_en": "Al-Baḥr al-Aḥmar [Red Sea]",
+      "abbreviation": "BAH",
+      "name_ar": "البحر الأحمر",
+      "capital": "Al-Ghurdaqah"
+    },
+    {
+      "name_en": "Al-Buḥayrah [Beheira]",
+      "abbreviation": "BHR",
+      "name_ar": "البحيرة",
+      "capital": "Damanhūr"
+    },
+    {
+      "name_en": "Al-Fayyūm [Fayoum]",
+      "abbreviation": "FYM",
+      "name_ar": "الفيوم",
+      "capital": "Al-Fayyūm"
+    },
+    {
+      "name_en": "Al-Gharbiyah [Gharbia]",
+      "abbreviation": "GHB",
+      "name_ar": "الغربية",
+      "capital": "Ṭanṭā"
+    },
+    {
+      "name_en": "Al-Iskandariyah [Alexandria]",
+      "abbreviation": "ISK",
+      "name_ar": "الإسكندرية",
+      "capital": "Al-Iskandariyah"
+    },
+    {
+      "name_en": "Al-Ismā'īliyah [Ismaïlia]",
+      "abbreviation": "ISM",
+      "name_ar": "الإسماعيلية",
+      "capital": "Al-Ismā'īliyah"
+    },
+    {
+      "name_en": "Al-Jīzah [Giza]",
+      "abbreviation": "JIZ",
+      "name_ar": "الجيزة",
+      "capital": "Al-Jīzah"
+    },
+    {
+      "name_en": "Al-Minūfiyah [Monufia]",
+      "abbreviation": "MNF",
+      "name_ar": "المنوفية",
+      "capital": "Shibīn al-Kawm"
+    },
+    {
+      "name_en": "Al-Minyā",
+      "abbreviation": "MNY",
+      "name_ar": "المنيا",
+      "capital": "Al-Minyā"
+    },
+    {
+      "name_en": "Al-Qāhirah [Cairo]",
+      "abbreviation": "QAH",
+      "name_ar": "القاهرة",
+      "capital": "Al-Qāhirah"
+    },
+    {
+      "name_en": "Al-Qalyūbyah [Qalyubia]",
+      "abbreviation": "QLY",
+      "name_ar": "القليوبية",
+      "capital": "Banhā"
+    },
+    {
+      "name_en": "Al-Uqṣor [Luxor]",
+      "abbreviation": "UQS",
+      "name_ar": "الأقصر",
+      "capital": "Al-Uqṣur"
+    },
+    {
+      "name_en": "Al-Wādī al-Jadīd [New Valley]",
+      "abbreviation": "WJD",
+      "name_ar": "الوادي الجديد",
+      "capital": "Al-Khārijah"
+    },
+    {
+      "name_en": "Ash-Sharqiyah [Sharqia]",
+      "abbreviation": "SQY",
+      "name_ar": "الشرقية",
+      "capital": "Az-Zaqāzīq"
+    },
+    {
+      "name_en": "As-Suways [Suez]",
+      "abbreviation": "SWS",
+      "name_ar": "السويس",
+      "capital": "As-Suways"
+    },
+    {
+      "name_en": "Aswān",
+      "abbreviation": "ASW",
+      "name_ar": "أسوان",
+      "capital": "Aswān"
+    },
+    {
+      "name_en": "Asyūt",
+      "abbreviation": "ASY",
+      "name_ar": "أسيوط",
+      "capital": "Asyūṭ"
+    },
+    {
+      "name_en": "Banī Suwayf [Beni Suef]",
+      "abbreviation": "BSW",
+      "name_ar": "بنى سويف",
+      "capital": "Banī Suwayf"
+    },
+    {
+      "name_en": "Būr Sa'īd [Port Said]",
+      "abbreviation": "BSD",
+      "name_ar": "بور سعيد",
+      "capital": "Būr Sa'īd"
+    },
+    {
+      "name_en": "Dumyāṭ [Damietta]",
+      "abbreviation": "DMY",
+      "name_ar": "دمياط",
+      "capital": "Dumyāṭ"
+    },
+    {
+      "name_en": "Kafr ash-Shaykh [Kafr el-Sheikh]",
+      "abbreviation": "KSH",
+      "name_ar": "كفر الشيخ",
+      "capital": "Kafr ash-Shaykh"
+    },
+    {
+      "name_en": "Maṭrūḥ [Matrouh]",
+      "abbreviation": "MTR",
+      "name_ar": "مطروح",
+      "capital": "Marsā Maṭrūḥ"
+    },
+    {
+      "name_en": "Qinā [Qena]",
+      "abbreviation": "QNA",
+      "name_ar": "قنا",
+      "capital": "Qinā"
+    },
+    {
+      "name_en": "Sawhāj [Sohag]",
+      "abbreviation": "SWJ",
+      "name_ar": "سوهاج",
+      "capital": "Sawhāj"
+    },
+    {
+      "name_en": "Sīnā' al-Janūbiyah [South Sinai]",
+      "abbreviation": "SJN",
+      "name_ar": "جنوب سيناء",
+      "capital": "Aṭ-Ṭūr"
+    },
+    {
+      "name_en": "Sīnā' ash-Shamāliyah [North Sinai]",
+      "abbreviation": "SSH",
+      "name_ar": "شمال سيناء",
+      "capital": "Al-'Arīsh"
+    }
+  ]
+}
