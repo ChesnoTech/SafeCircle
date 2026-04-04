@@ -48,14 +48,28 @@ Citizens who provide information that helps solve cases or find missing persons 
 - Amber Alert: government-only, slow
 - No platform combines all these layers globally
 
-## Tech Stack (Planned)
+## Tech Stack (Planned) — 100% Free / Open Source
 
-- Mobile: React Native (iOS + Android)
-- Backend: Node.js + PostgreSQL + Redis
-- Real-time: WebSocket for instant alerts
-- Geo: PostGIS for geographic queries
-- Push: Firebase Cloud Messaging
-- Privacy: end-to-end encryption for reports
+| Layer | Technology | Cost | Why |
+|-------|-----------|------|-----|
+| Mobile | React Native / Expo | Free | iOS + Android from one codebase |
+| Backend | Node.js + Fastify | Free | Fast, lightweight, huge ecosystem |
+| Database | Supabase (PostgreSQL + PostGIS) | Free tier | Geo queries, auth, realtime, storage — all in one |
+| Auth | Supabase Auth | Free (50k MAU) | Email/phone OTP, social login, JWT — built in |
+| Realtime | Supabase Realtime | Free tier | WebSocket push for alerts, sightings, chat |
+| Push notifications | Firebase Cloud Messaging | Free (unlimited) | Push to iOS + Android |
+| File storage | Supabase Storage | Free (1GB) | Photos, evidence — with signed URLs |
+| Image matching | TensorFlow.js | Free | On-device or server-side image similarity |
+| Hosting (API) | Railway / Render / Fly.io | Free tier | Auto-deploy from GitHub |
+| Hosting (Web) | Vercel / Cloudflare Pages | Free | Admin dashboard, landing page |
+| CDN | Cloudflare | Free | Global CDN for static assets |
+| CI/CD | GitHub Actions | Free (public repo) | Automated testing and deployment |
+| Email | Resend | Free (100/day) | Transactional emails, notifications |
+| Maps | OpenStreetMap + Leaflet | Free | No Google Maps fees |
+| Monitoring | Grafana Cloud | Free tier | Dashboards, alerts |
+| DNS + SSL | Cloudflare | Free | HTTPS, DDoS protection |
+
+> Zero cost to launch. Paid tiers only needed at scale (thousands of users).
 
 ## Documentation
 
