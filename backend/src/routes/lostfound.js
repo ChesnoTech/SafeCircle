@@ -10,6 +10,8 @@ export async function lostFoundRoutes(fastify) {
         required: ['category', 'description', 'latitude', 'longitude'],
         properties: {
           category: { type: 'string', maxLength: config.maxStringLength },
+          color: { type: 'string', maxLength: 50 },
+          brand: { type: 'string', maxLength: 100 },
           description: { type: 'string', maxLength: config.maxStringLength },
           photo_url: { type: 'string', maxLength: config.maxStringLength },
           latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
@@ -50,6 +52,8 @@ export async function lostFoundRoutes(fastify) {
         required: ['category', 'description', 'latitude', 'longitude'],
         properties: {
           category: { type: 'string', maxLength: config.maxStringLength },
+          color: { type: 'string', maxLength: 50 },
+          brand: { type: 'string', maxLength: 100 },
           description: { type: 'string', maxLength: config.maxStringLength },
           photo_url: { type: 'string', maxLength: config.maxStringLength },
           latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },

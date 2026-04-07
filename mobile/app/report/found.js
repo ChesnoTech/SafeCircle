@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Switch, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Switch, Image, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { reportFound, uploadPhoto } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
-
-const categories = ['wallet', 'phone', 'keys', 'bag', 'documents', 'jewelry', 'electronics', 'other'];
 
 export default function FoundReportScreen() {
   const router = useRouter();
@@ -16,13 +14,18 @@ export default function FoundReportScreen() {
   const [photo, setPhoto] = useState(null);
   const [form, setForm] = useState({
     category: '',
+    color: '',
+    brand: '',
     description: '',
     found_address: '',
     willing_to_hold: true,
   });
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: CONFIG.ALLOWED_IMAGE_TYPES,
+      quality: CONFIG.MAX_PHOTO_QUALITY,
+    });
     if (!result.canceled) setPhoto(result.assets[0].uri);
   };
 
@@ -45,7 +48,10 @@ export default function FoundReportScreen() {
         found_time: new Date().toISOString(),
       });
       if (result.matches_found > 0) {
-        alert(`Potential match found! ${result.matches_found} lost item(s) match your description.`);
+        Alert.alert(
+          'Potential Match!',
+          `${result.matches_found} lost item(s) match your description. The owner(s) will be notified.`,
+        );
       }
       router.back();
     } catch (err) {
@@ -63,21 +69,52 @@ export default function FoundReportScreen() {
         ) : (
           <View style={styles.photoPlaceholder}>
             <Text style={styles.photoIcon}>+</Text>
-            <Text style={styles.photoText}>Add Photo (optional)</Text>
+            <Text style={styles.photoText}>Add Photo (helps matching)</Text>
           </View>
         )}
       </TouchableOpacity>
 
       <Text style={styles.label}>Category *</Text>
-      <View style={styles.categoryGrid}>
-        {categories.map((cat) => (
+      <View style={styles.chipGrid}>
+        {CONFIG.ITEM_CATEGORIES.map((cat) => (
           <TouchableOpacity
-            key={cat}
-            style={[styles.categoryButton, form.category === cat && styles.categoryActive]}
-            onPress={() => setForm({ ...form, category: cat })}
+            key={cat.id}
+            style={[styles.chip, form.category === cat.id && styles.chipActiveSuccess]}
+            onPress={() => setForm({ ...form, category: cat.id })}
           >
-            <Text style={[styles.categoryText, form.category === cat && styles.categoryTextActive]}>
-              {cat}
+            <Text style={styles.chipIcon}>{cat.icon}</Text>
+            <Text style={[styles.chipText, form.category === cat.id && styles.chipTextActive]}>
+              {cat.id}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <Text style={styles.label}>Color</Text>
+      <View style={styles.colorRow}>
+        {CONFIG.ITEM_COLORS.map((color) => (
+          <TouchableOpacity
+            key={color}
+            style={[
+              styles.colorChip,
+              { backgroundColor: COLOR_MAP[color] || '#ccc' },
+              form.color === color && styles.colorChipSelected,
+            ]}
+            onPress={() => setForm({ ...form, color: form.color === color ? '' : color })}
+          />
+        ))}
+      </View>
+
+      <Text style={styles.label}>Brand (optional)</Text>
+      <View style={styles.chipGrid}>
+        {CONFIG.ITEM_BRANDS.slice(0, 8).map((brand) => (
+          <TouchableOpacity
+            key={brand}
+            style={[styles.chip, form.brand === brand && styles.chipActiveSuccess]}
+            onPress={() => setForm({ ...form, brand: form.brand === brand ? '' : brand })}
+          >
+            <Text style={[styles.chipText, form.brand === brand && styles.chipTextActive]}>
+              {brand.replace(/_/g, ' ')}
             </Text>
           </TouchableOpacity>
         ))}
@@ -86,7 +123,7 @@ export default function FoundReportScreen() {
       <Text style={styles.label}>Description *</Text>
       <TextInput
         style={[styles.input, styles.multiline]}
-        placeholder="Describe the item in detail"
+        placeholder="Describe the item (keep some details private for verification)"
         value={form.description}
         onChangeText={(v) => setForm({ ...form, description: v })}
         multiline
@@ -96,7 +133,7 @@ export default function FoundReportScreen() {
       <Text style={styles.label}>Where did you find it?</Text>
       <TextInput
         style={styles.input}
-        placeholder="Address, landmark, or metro station"
+        placeholder="Address, landmark, or station"
         value={form.found_address}
         onChangeText={(v) => setForm({ ...form, found_address: v })}
       />
@@ -117,15 +154,23 @@ export default function FoundReportScreen() {
         onPress={handleSubmit}
         disabled={loading}
       >
-        <Text style={styles.submitText}>
-          {loading ? 'Submitting...' : 'Report Found Item'}
-        </Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.submitText}>Report Found Item</Text>
+        )}
       </TouchableOpacity>
 
       <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
+
+const COLOR_MAP = {
+  black: '#000', white: '#fff', brown: '#8B4513', red: '#DC2626',
+  blue: '#2563EB', green: '#22C55E', yellow: '#EAB308', orange: '#F97316',
+  pink: '#EC4899', purple: '#9333EA', gray: '#9CA3AF', gold: '#D4A017', silver: '#C0C0C0',
+};
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: CONFIG.COLORS.background, padding: 16 },
@@ -144,14 +189,21 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: CONFIG.COLORS.border,
   },
   multiline: { minHeight: 100, textAlignVertical: 'top' },
-  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  categoryButton: {
-    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
+  chipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20,
     backgroundColor: CONFIG.COLORS.card, borderWidth: 1, borderColor: CONFIG.COLORS.border,
   },
-  categoryActive: { backgroundColor: CONFIG.COLORS.success, borderColor: CONFIG.COLORS.success },
-  categoryText: { fontSize: 14, color: '#333' },
-  categoryTextActive: { color: '#fff', fontWeight: 'bold' },
+  chipIcon: { fontSize: 16 },
+  chipActiveSuccess: { backgroundColor: CONFIG.COLORS.success, borderColor: CONFIG.COLORS.success },
+  chipText: { fontSize: 13, color: '#333', textTransform: 'capitalize' },
+  chipTextActive: { color: '#fff', fontWeight: 'bold' },
+  colorRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  colorChip: {
+    width: 32, height: 32, borderRadius: 16, borderWidth: 2, borderColor: CONFIG.COLORS.border,
+  },
+  colorChipSelected: { borderColor: CONFIG.COLORS.success, borderWidth: 3 },
   switchRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginTop: 16, backgroundColor: CONFIG.COLORS.card, padding: 14, borderRadius: 10,

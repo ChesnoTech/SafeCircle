@@ -143,3 +143,24 @@ export const updateLocation = (lat, lng) =>
 export const updateSettings = (settings) =>
   api('/users/me/settings', { method: 'PUT', body: JSON.stringify(settings) });
 export const getMyReports = () => api('/users/me/reports');
+
+// --- Notifications ---
+export const registerFcmToken = (token, platform, language) =>
+  api('/notifications/token', { method: 'PUT', body: JSON.stringify({ token, platform, language }) });
+export const removeFcmToken = () => api('/notifications/token', { method: 'DELETE' });
+export const getNotificationPrefs = () => api('/notifications/preferences');
+export const updateNotificationPrefs = (prefs) =>
+  api('/notifications/preferences', { method: 'PUT', body: JSON.stringify(prefs) });
+
+// --- Verification ---
+export const claimItem = (itemId) =>
+  api(`/verification/items/${itemId}/claim`, { method: 'POST' });
+export const submitVerification = (claimId, answers) =>
+  api(`/verification/claims/${claimId}/verify`, { method: 'POST', body: JSON.stringify({ answers }) });
+
+// --- Resolution ---
+export const resolveReport = (reportId, data) =>
+  api(`/reports/${reportId}/resolve`, { method: 'POST', body: JSON.stringify(data) });
+export const getStories = (page = 1) => api(`/stories?page=${page}`);
+export const celebrateStory = (storyId) =>
+  api(`/stories/${storyId}/celebrate`, { method: 'POST' });
