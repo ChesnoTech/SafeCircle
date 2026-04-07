@@ -1,3 +1,5 @@
+import { config } from '../config/index.js';
+
 export async function lostFoundRoutes(fastify) {
   // --- Report lost item ---
   fastify.post('/lost', {
@@ -7,12 +9,12 @@ export async function lostFoundRoutes(fastify) {
         type: 'object',
         required: ['category', 'description', 'latitude', 'longitude'],
         properties: {
-          category: { type: 'string' },
-          description: { type: 'string' },
-          photo_url: { type: 'string' },
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
-          lost_address: { type: 'string' },
+          category: { type: 'string', maxLength: config.maxStringLength },
+          description: { type: 'string', maxLength: config.maxStringLength },
+          photo_url: { type: 'string', maxLength: config.maxStringLength },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
+          lost_address: { type: 'string', maxLength: config.maxStringLength },
           lost_time_from: { type: 'string', format: 'date-time' },
           lost_time_to: { type: 'string', format: 'date-time' },
           reward: { type: 'integer', default: 0 },
@@ -47,12 +49,12 @@ export async function lostFoundRoutes(fastify) {
         type: 'object',
         required: ['category', 'description', 'latitude', 'longitude'],
         properties: {
-          category: { type: 'string' },
-          description: { type: 'string' },
-          photo_url: { type: 'string' },
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
-          found_address: { type: 'string' },
+          category: { type: 'string', maxLength: config.maxStringLength },
+          description: { type: 'string', maxLength: config.maxStringLength },
+          photo_url: { type: 'string', maxLength: config.maxStringLength },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
+          found_address: { type: 'string', maxLength: config.maxStringLength },
           found_time: { type: 'string', format: 'date-time' },
           willing_to_hold: { type: 'boolean', default: true },
           handoff_preference: { type: 'string', default: 'in_person' },
@@ -102,10 +104,10 @@ export async function lostFoundRoutes(fastify) {
         type: 'object',
         required: ['latitude', 'longitude'],
         properties: {
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
           radius_km: { type: 'integer', default: 5 },
-          category: { type: 'string' },
+          category: { type: 'string', maxLength: config.maxStringLength },
           limit: { type: 'integer', default: 50 },
         },
       },
@@ -142,10 +144,10 @@ export async function lostFoundRoutes(fastify) {
         type: 'object',
         required: ['latitude', 'longitude'],
         properties: {
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
           radius_km: { type: 'integer', default: 5 },
-          category: { type: 'string' },
+          category: { type: 'string', maxLength: config.maxStringLength },
           limit: { type: 'integer', default: 50 },
         },
       },

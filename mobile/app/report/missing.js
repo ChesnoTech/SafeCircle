@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { createMissingReport, uploadPhoto } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
+import { CONFIG } from '../../lib/config';
 
 export default function MissingReportScreen() {
   const router = useRouter();
@@ -155,7 +156,7 @@ export default function MissingReportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', padding: 16 },
+  container: { flex: 1, backgroundColor: CONFIG.COLORS.background, padding: 16 },
   photoPicker: { alignItems: 'center', marginBottom: 20 },
   photoPreview: { width: 160, height: 160, borderRadius: 12 },
   photoPlaceholder: {
@@ -167,21 +168,21 @@ const styles = StyleSheet.create({
   photoText: { color: '#999', marginTop: 4 },
   label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 6, marginTop: 12 },
   input: {
-    backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 16,
-    borderWidth: 1, borderColor: '#e0e0e0',
+    backgroundColor: CONFIG.COLORS.card, borderRadius: 10, padding: 14, fontSize: 16,
+    borderWidth: 1, borderColor: CONFIG.COLORS.border,
   },
   multiline: { minHeight: 80, textAlignVertical: 'top' },
   genderRow: { flexDirection: 'row', gap: 8 },
   genderButton: {
-    flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#fff',
-    borderWidth: 1, borderColor: '#e0e0e0', alignItems: 'center',
+    flex: 1, padding: 10, borderRadius: 8, backgroundColor: CONFIG.COLORS.card,
+    borderWidth: 1, borderColor: CONFIG.COLORS.border, alignItems: 'center',
   },
-  genderActive: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
+  genderActive: { backgroundColor: CONFIG.COLORS.primary, borderColor: CONFIG.COLORS.primary },
   genderText: { fontSize: 14, color: '#333' },
   genderTextActive: { color: '#fff', fontWeight: 'bold' },
-  error: { color: '#DC2626', textAlign: 'center', marginTop: 12 },
+  error: { color: CONFIG.COLORS.error, textAlign: 'center', marginTop: 12 },
   submitButton: {
-    backgroundColor: '#DC2626', padding: 16, borderRadius: 12,
+    backgroundColor: CONFIG.COLORS.primary, padding: 16, borderRadius: 12,
     alignItems: 'center', marginTop: 20,
   },
   submitDisabled: { opacity: 0.6 },

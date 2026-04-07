@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getReport, getSightings, reportSighting } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
+import { watchReport, unwatchReport, getSocket } from '../../lib/socket';
+import { CONFIG } from '../../lib/config';
 
 function getTimeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -23,6 +25,21 @@ export default function AlertDetailScreen() {
   const [showSightingForm, setShowSightingForm] = useState(false);
   const [sightingNotes, setSightingNotes] = useState('');
   const [confidence, setConfidence] = useState('unsure');
+
+  // Subscribe to real-time sighting updates for this report
+  useEffect(() => {
+    watchReport(id);
+    const socket = getSocket();
+    const handleNewSighting = (sighting) => {
+      queryClient.invalidateQueries({ queryKey: ['sightings', id] });
+    };
+    socket.on('new_sighting', handleNewSighting);
+
+    return () => {
+      unwatchReport(id);
+      socket.off('new_sighting', handleNewSighting);
+    };
+  }, [id]);
 
   const { data: report, isLoading } = useQuery({
     queryKey: ['report', id],
@@ -56,7 +73,15 @@ export default function AlertDetailScreen() {
   if (isLoading || !report) {
     return (
       <View style={styles.center}>
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color={CONFIG.COLORS.primary} />
+      </View>
+    );
+  }
+
+  if (report.error) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ color: CONFIG.COLORS.error, fontSize: 16 }}>Report not found</Text>
       </View>
     );
   }

@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { reportFound, uploadPhoto } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
+import { CONFIG } from '../../lib/config';
 
 const categories = ['wallet', 'phone', 'keys', 'bag', 'documents', 'jewelry', 'electronics', 'other'];
 
@@ -105,7 +106,7 @@ export default function FoundReportScreen() {
         <Switch
           value={form.willing_to_hold}
           onValueChange={(v) => setForm({ ...form, willing_to_hold: v })}
-          trackColor={{ true: '#22C55E' }}
+          trackColor={{ true: CONFIG.COLORS.success }}
         />
       </View>
 
@@ -127,7 +128,7 @@ export default function FoundReportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', padding: 16 },
+  container: { flex: 1, backgroundColor: CONFIG.COLORS.background, padding: 16 },
   photoPicker: { alignItems: 'center', marginBottom: 12 },
   photoPreview: { width: 140, height: 140, borderRadius: 12 },
   photoPlaceholder: {
@@ -139,27 +140,27 @@ const styles = StyleSheet.create({
   photoText: { color: '#999', fontSize: 12, marginTop: 4 },
   label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 6, marginTop: 12 },
   input: {
-    backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 16,
-    borderWidth: 1, borderColor: '#e0e0e0',
+    backgroundColor: CONFIG.COLORS.card, borderRadius: 10, padding: 14, fontSize: 16,
+    borderWidth: 1, borderColor: CONFIG.COLORS.border,
   },
   multiline: { minHeight: 100, textAlignVertical: 'top' },
   categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   categoryButton: {
     paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
-    backgroundColor: '#fff', borderWidth: 1, borderColor: '#e0e0e0',
+    backgroundColor: CONFIG.COLORS.card, borderWidth: 1, borderColor: CONFIG.COLORS.border,
   },
-  categoryActive: { backgroundColor: '#22C55E', borderColor: '#22C55E' },
+  categoryActive: { backgroundColor: CONFIG.COLORS.success, borderColor: CONFIG.COLORS.success },
   categoryText: { fontSize: 14, color: '#333' },
   categoryTextActive: { color: '#fff', fontWeight: 'bold' },
   switchRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    marginTop: 16, backgroundColor: '#fff', padding: 14, borderRadius: 10,
-    borderWidth: 1, borderColor: '#e0e0e0',
+    marginTop: 16, backgroundColor: CONFIG.COLORS.card, padding: 14, borderRadius: 10,
+    borderWidth: 1, borderColor: CONFIG.COLORS.border,
   },
   switchLabel: { fontSize: 16, color: '#333' },
-  error: { color: '#DC2626', textAlign: 'center', marginTop: 12 },
+  error: { color: CONFIG.COLORS.error, textAlign: 'center', marginTop: 12 },
   submitButton: {
-    backgroundColor: '#22C55E', padding: 16, borderRadius: 12,
+    backgroundColor: CONFIG.COLORS.success, padding: 16, borderRadius: 12,
     alignItems: 'center', marginTop: 20,
   },
   submitDisabled: { opacity: 0.6 },

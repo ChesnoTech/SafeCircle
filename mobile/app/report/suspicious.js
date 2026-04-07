@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { submitIntelReport, uploadPhoto } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
+import { CONFIG } from '../../lib/config';
 
 const categories = [
   'suspicious_vehicle', 'suspicious_person', 'attempted_luring',
@@ -138,7 +139,7 @@ export default function SuspiciousReportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', padding: 16 },
+  container: { flex: 1, backgroundColor: CONFIG.COLORS.background, padding: 16 },
   photoPicker: { alignItems: 'center', marginBottom: 12 },
   photoPreview: { width: 140, height: 140, borderRadius: 12 },
   photoPlaceholder: {
@@ -155,32 +156,32 @@ const styles = StyleSheet.create({
   anonText: { color: '#4338CA', textAlign: 'center', fontWeight: '600' },
   label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 6, marginTop: 12 },
   input: {
-    backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 16,
-    borderWidth: 1, borderColor: '#e0e0e0',
+    backgroundColor: CONFIG.COLORS.card, borderRadius: 10, padding: 14, fontSize: 16,
+    borderWidth: 1, borderColor: CONFIG.COLORS.border,
   },
   multiline: { minHeight: 100, textAlignVertical: 'top' },
   categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   categoryButton: {
     paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20,
-    backgroundColor: '#fff', borderWidth: 1, borderColor: '#e0e0e0',
+    backgroundColor: CONFIG.COLORS.card, borderWidth: 1, borderColor: CONFIG.COLORS.border,
   },
-  categoryActive: { backgroundColor: '#6366F1', borderColor: '#6366F1' },
+  categoryActive: { backgroundColor: CONFIG.COLORS.info, borderColor: CONFIG.COLORS.info },
   categoryText: { fontSize: 13, color: '#333', textTransform: 'capitalize' },
   categoryTextActive: { color: '#fff', fontWeight: 'bold' },
   severityRow: { flexDirection: 'row', gap: 8 },
   severityButton: {
-    flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#fff',
-    borderWidth: 1, borderColor: '#e0e0e0', alignItems: 'center',
+    flex: 1, padding: 10, borderRadius: 8, backgroundColor: CONFIG.COLORS.card,
+    borderWidth: 1, borderColor: CONFIG.COLORS.border, alignItems: 'center',
   },
-  severity_low: { backgroundColor: '#DCFCE7', borderColor: '#22C55E' },
-  severity_medium: { backgroundColor: '#FEF3C7', borderColor: '#F59E0B' },
-  severity_high: { backgroundColor: '#FEE2E2', borderColor: '#EF4444' },
-  severity_urgent: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
+  severity_low: { backgroundColor: '#DCFCE7', borderColor: CONFIG.COLORS.success },
+  severity_medium: { backgroundColor: '#FEF3C7', borderColor: CONFIG.COLORS.warning },
+  severity_high: { backgroundColor: '#FEE2E2', borderColor: CONFIG.COLORS.danger },
+  severity_urgent: { backgroundColor: CONFIG.COLORS.primary, borderColor: CONFIG.COLORS.primary },
   severityText: { fontSize: 13, color: '#333', textTransform: 'capitalize' },
   severityTextActive: { fontWeight: 'bold' },
-  error: { color: '#DC2626', textAlign: 'center', marginTop: 12 },
+  error: { color: CONFIG.COLORS.error, textAlign: 'center', marginTop: 12 },
   submitButton: {
-    backgroundColor: '#6366F1', padding: 16, borderRadius: 12,
+    backgroundColor: CONFIG.COLORS.info, padding: 16, borderRadius: 12,
     alignItems: 'center', marginTop: 20,
   },
   submitDisabled: { opacity: 0.6 },

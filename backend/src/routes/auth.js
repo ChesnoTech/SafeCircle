@@ -1,18 +1,20 @@
 import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
+import { config } from '../config/index.js';
 
 export async function authRoutes(fastify) {
   // --- Register ---
   fastify.post('/register', {
+    config: { rateLimit: { max: config.authRateLimit, timeWindow: '1 minute' } },
     schema: {
       body: {
         type: 'object',
         required: ['email', 'password', 'name'],
         properties: {
-          email: { type: 'string', format: 'email' },
-          password: { type: 'string', minLength: 8 },
-          name: { type: 'string', minLength: 1 },
-          phone: { type: 'string' },
+          email: { type: 'string', format: 'email', maxLength: config.maxStringLength },
+          password: { type: 'string', minLength: config.minPasswordLength },
+          name: { type: 'string', minLength: 1, maxLength: config.maxStringLength },
+          phone: { type: 'string', maxLength: config.maxStringLength },
           language: { type: 'string', default: 'en' },
           country: { type: 'string', default: 'RU' },
         },
@@ -53,12 +55,13 @@ export async function authRoutes(fastify) {
 
   // --- Login ---
   fastify.post('/login', {
+    config: { rateLimit: { max: config.authRateLimit, timeWindow: '1 minute' } },
     schema: {
       body: {
         type: 'object',
         required: ['email', 'password'],
         properties: {
-          email: { type: 'string', format: 'email' },
+          email: { type: 'string', format: 'email', maxLength: config.maxStringLength },
           password: { type: 'string' },
         },
       },

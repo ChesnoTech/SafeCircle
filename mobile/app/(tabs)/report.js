@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { CONFIG } from '../../lib/config';
 
 const reportTypes = [
   {
@@ -7,7 +8,7 @@ const reportTypes = [
     icon: '🚨',
     title: 'Missing Person',
     subtitle: 'Report a missing person — instant alert to nearby users',
-    color: '#DC2626',
+    color: CONFIG.COLORS.primary,
     route: '/report/missing',
   },
   {
@@ -15,7 +16,7 @@ const reportTypes = [
     icon: '📦',
     title: 'Lost Item',
     subtitle: 'Report a lost item — automatic matching with found items',
-    color: '#F59E0B',
+    color: CONFIG.COLORS.warning,
     route: '/report/lost',
   },
   {
@@ -23,7 +24,7 @@ const reportTypes = [
     icon: '🔍',
     title: 'Found Something',
     subtitle: 'Report a found item or person — help reunite',
-    color: '#22C55E',
+    color: CONFIG.COLORS.success,
     route: '/report/found',
   },
   {
@@ -31,7 +32,7 @@ const reportTypes = [
     icon: '👁️',
     title: 'Suspicious Activity',
     subtitle: 'Anonymous report — helps detect patterns',
-    color: '#6366F1',
+    color: CONFIG.COLORS.info,
     route: '/report/suspicious',
   },
 ];
@@ -62,17 +63,17 @@ export default function ReportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', padding: 16 },
-  title: { fontSize: 22, fontWeight: 'bold', color: '#111', marginBottom: 16 },
+  container: { flex: 1, backgroundColor: CONFIG.COLORS.background, padding: 16 },
+  title: { fontSize: 22, fontWeight: 'bold', color: CONFIG.COLORS.text, marginBottom: 16 },
   card: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: CONFIG.COLORS.card,
     borderRadius: 12, padding: 16, marginBottom: 12, borderLeftWidth: 4,
     elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1, shadowRadius: 3,
   },
   icon: { fontSize: 32, marginRight: 12 },
   cardContent: { flex: 1 },
-  cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#111' },
-  cardSubtitle: { fontSize: 13, color: '#666', marginTop: 2 },
+  cardTitle: { fontSize: 18, fontWeight: 'bold', color: CONFIG.COLORS.text },
+  cardSubtitle: { fontSize: 13, color: CONFIG.COLORS.textSecondary, marginTop: 2 },
   arrow: { fontSize: 28, color: '#ccc' },
 });

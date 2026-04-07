@@ -1,16 +1,24 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
+import { connectSocket, disconnectSocket } from '../lib/socket';
+import { CONFIG } from '../lib/config';
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  useEffect(() => {
+    connectSocket();
+    return () => disconnectSocket();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar style="auto" />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: '#DC2626' },
+          headerStyle: { backgroundColor: CONFIG.COLORS.primary },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
         }}

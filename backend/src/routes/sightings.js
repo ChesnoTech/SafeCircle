@@ -1,3 +1,5 @@
+import { config } from '../config/index.js';
+
 export async function sightingRoutes(fastify) {
   // --- Report a sighting ---
   fastify.post('/', {
@@ -8,13 +10,13 @@ export async function sightingRoutes(fastify) {
         required: ['report_id', 'latitude', 'longitude'],
         properties: {
           report_id: { type: 'string', format: 'uuid' },
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
           confidence: { type: 'string', enum: ['certain', 'likely', 'unsure'] },
-          direction_of_travel: { type: 'string' },
-          photo_url: { type: 'string' },
-          notes: { type: 'string' },
-          accompanied: { type: 'string' },
+          direction_of_travel: { type: 'string', maxLength: config.maxStringLength },
+          photo_url: { type: 'string', maxLength: config.maxStringLength },
+          notes: { type: 'string', maxLength: config.maxStringLength },
+          accompanied: { type: 'string', maxLength: config.maxStringLength },
         },
       },
     },
