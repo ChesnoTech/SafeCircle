@@ -15,6 +15,9 @@ import { lostFoundRoutes } from './routes/lostfound.js';
 import { intelRoutes } from './routes/intel.js';
 import { uploadRoutes } from './routes/upload.js';
 import { userRoutes } from './routes/users.js';
+import { notificationRoutes } from './routes/notifications.js';
+import { verificationRoutes } from './routes/verification.js';
+import { resolutionRoutes } from './routes/resolution.js';
 
 const app = Fastify({
   logger: {
@@ -41,6 +44,9 @@ await app.register(lostFoundRoutes, { prefix: '/api/items' });
 await app.register(intelRoutes, { prefix: '/api/intel' });
 await app.register(uploadRoutes, { prefix: '/api/upload' });
 await app.register(userRoutes, { prefix: '/api/users' });
+await app.register(notificationRoutes, { prefix: '/api/notifications' });
+await app.register(verificationRoutes, { prefix: '/api/verification' });
+await app.register(resolutionRoutes, { prefix: '/api' });
 
 // --- Health Check ---
 app.get('/api/health', async () => ({

@@ -134,18 +134,65 @@ export async function reportRoutes(fastify) {
     return result.rows[0];
   });
 
-  // --- Update report status ---
+  // --- Update report (status and/or additional details for 2-phase flow) ---
   fastify.patch('/missing/:id', {
     preHandler: [fastify.authenticate],
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          status: { type: 'string', enum: ['active', 'resolved', 'expired', 'false_alarm'] },
+          gender: { type: 'string', enum: ['male', 'female', 'other', 'unknown'] },
+          clothing_description: { type: 'string', maxLength: config.maxStringLength },
+          last_seen_address: { type: 'string', maxLength: config.maxStringLength },
+          circumstances: { type: 'string', maxLength: config.maxStringLength },
+          hair_color: { type: 'string', maxLength: 100 },
+          eye_color: { type: 'string', maxLength: 100 },
+          height_min_cm: { type: 'integer', minimum: 0, maximum: 300 },
+          height_max_cm: { type: 'integer', minimum: 0, maximum: 300 },
+        },
+      },
+    },
   }, async (request, reply) => {
-    const { status } = request.body;
+    const { status, ...details } = request.body;
 
+    // Build dynamic SET clause for provided fields
+    const setClauses = [];
+    const params = [];
+    let paramIndex = 1;
+
+    if (status) {
+      setClauses.push(`status = $${paramIndex}::report_status`);
+      params.push(status);
+      paramIndex++;
+      if (status === 'resolved') {
+        setClauses.push(`resolved_at = NOW()`);
+      }
+    }
+
+    const allowedFields = [
+      'gender', 'clothing_description', 'last_seen_address', 'circumstances',
+      'hair_color', 'eye_color', 'height_min_cm', 'height_max_cm',
+    ];
+    for (const field of allowedFields) {
+      if (details[field] !== undefined) {
+        setClauses.push(`${field} = $${paramIndex}`);
+        params.push(details[field]);
+        paramIndex++;
+      }
+    }
+
+    if (setClauses.length === 0) {
+      return reply.code(400).send({ error: 'No fields to update' });
+    }
+
+    params.push(request.params.id, request.user.id);
     const result = await fastify.db.query(
       `UPDATE missing_reports
-       SET status = $1::report_status, resolved_at = CASE WHEN $1::text = 'resolved' THEN NOW() ELSE NULL END
-       WHERE id = $2 AND reporter_id = $3
-       RETURNING id, status`,
-      [status, request.params.id, request.user.id]
+       SET ${setClauses.join(', ')}
+       WHERE id = $${paramIndex} AND reporter_id = $${paramIndex + 1}
+       RETURNING *`,
+      params
     );
 
     if (result.rows.length === 0) {
@@ -153,7 +200,6 @@ export async function reportRoutes(fastify) {
     }
 
     if (status === 'resolved') {
-      // Broadcast to all connected clients (resolution is low-frequency, broad relevance)
       fastify.io.emit('alert_resolved', { id: request.params.id });
     }
 

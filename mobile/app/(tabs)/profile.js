@@ -74,7 +74,7 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Settings</Text>
         <MenuItem label="Notification Radius" value={`${profile?.notification_radius_km || 10} km`} />
         <MenuItem label="Language" value={profile?.language || 'en'} />
-        <MenuItem label="Country" value={profile?.country || 'RU'} />
+        <MenuItem label="Country" value={profile?.country || '—'} />
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
