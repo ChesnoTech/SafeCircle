@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "SafeCircle",
+    "slug": "safecircle",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "safecircle",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chesnotech.safecircle",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "SafeCircle needs your location to show nearby alerts and reports.",
+        "NSLocationAlwaysUsageDescription": "SafeCircle needs background location to send you alerts when someone nearby is in danger.",
+        "NSCameraUsageDescription": "SafeCircle needs camera access to take photos for reports.",
+        "NSPhotoLibraryUsageDescription": "SafeCircle needs photo library access to attach photos to reports."
+      }
+    },
+    "android": {
+      "package": "com.chesnotech.safecircle",
+      "adaptiveIcon": {
+        "backgroundColor": "#DC2626"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-location",
+      "expo-image-picker",
+      "expo-notifications",
+      "expo-secure-store"
+    ]
+  }
+}

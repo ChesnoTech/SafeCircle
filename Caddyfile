@@ -1,0 +1,27 @@
+# Development: localhost (auto-generates self-signed cert)
+# Production: replace with your domain (auto-generates Let's Encrypt cert)
+
+{$DOMAIN:localhost} {
+	# API
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+
+	# Socket.IO
+	handle /socket.io/* {
+		reverse_proxy api:3000
+	}
+
+	# MinIO storage (public read for photos)
+	handle /storage/* {
+		uri strip_prefix /storage
+		reverse_proxy minio:9000
+	}
+
+	# Web dashboard (serve static files or proxy to Next.js)
+	handle {
+		root * /srv/web
+		try_files {path} /index.html
+		file_server
+	}
+}

@@ -1,0 +1,32 @@
+{
+  "name": "safecircle-api",
+  "version": "0.1.0",
+  "description": "SafeCircle backend API — community safety platform",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "node --test src/**/*.test.js",
+    "migrate": "psql $DATABASE_URL -f migrations/001_initial.sql"
+  },
+  "dependencies": {
+    "fastify": "^5.0.0",
+    "@fastify/cors": "^10.0.0",
+    "@fastify/jwt": "^9.0.0",
+    "@fastify/multipart": "^9.0.0",
+    "@fastify/rate-limit": "^10.0.0",
+    "@fastify/websocket": "^11.0.0",
+    "pg": "^8.13.0",
+    "ioredis": "^5.4.0",
+    "minio": "^8.0.0",
+    "bcryptjs": "^2.4.3",
+    "bullmq": "^5.0.0",
+    "sharp": "^0.33.0",
+    "socket.io": "^4.8.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13.0.0"
+  }
+}
