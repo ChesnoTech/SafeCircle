@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { login, register, setTokens } from '../lib/api';
 import { useAuthStore } from '../lib/store';
+import { CONFIG } from '../lib/config';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -26,7 +27,12 @@ export default function LoginScreen() {
       setUser(data.user);
       router.replace('/');
     } catch (err) {
-      setError(err.message || 'Something went wrong');
+      const msg = err.message || '';
+      if (msg === 'Network request failed') {
+        setError('No internet connection. Please check your network.');
+      } else {
+        setError(msg || 'Something went wrong');
+      }
     } finally {
       setLoading(false);
     }
@@ -76,9 +82,13 @@ export default function LoginScreen() {
           onPress={handleSubmit}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>
-            {loading ? '...' : isRegister ? 'Create Account' : 'Sign In'}
-          </Text>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>
+              {isRegister ? 'Create Account' : 'Sign In'}
+            </Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -98,7 +108,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', justifyContent: 'center', padding: 24 },
   header: { alignItems: 'center', marginBottom: 40 },
   logo: { fontSize: 64 },
-  title: { fontSize: 32, fontWeight: 'bold', color: '#DC2626', marginTop: 12 },
+  title: { fontSize: 32, fontWeight: 'bold', color: CONFIG.COLORS.primary, marginTop: 12 },
   subtitle: { fontSize: 16, color: '#666', marginTop: 4 },
   form: { gap: 12 },
   input: {
@@ -106,12 +116,12 @@ const styles = StyleSheet.create({
     fontSize: 16, backgroundColor: '#f9f9f9',
   },
   button: {
-    backgroundColor: '#DC2626', padding: 16, borderRadius: 12,
+    backgroundColor: CONFIG.COLORS.primary, padding: 16, borderRadius: 12,
     alignItems: 'center', marginTop: 8,
   },
   buttonDisabled: { opacity: 0.6 },
   buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   switchButton: { alignItems: 'center', marginTop: 16 },
-  switchText: { color: '#DC2626', fontSize: 14 },
-  error: { color: '#DC2626', textAlign: 'center', fontSize: 14 },
+  switchText: { color: CONFIG.COLORS.primary, fontSize: 14 },
+  error: { color: CONFIG.COLORS.error, textAlign: 'center', fontSize: 14 },
 });

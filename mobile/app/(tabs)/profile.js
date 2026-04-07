@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getProfile, getMyReports } from '../../lib/api';
 import { useAuthStore } from '../../lib/store';
 import { clearTokens } from '../../lib/api';
+import { CONFIG } from '../../lib/config';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -64,9 +65,9 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.stats}>
-        <StatBox label="Missing" count={reports?.missing?.length || 0} color="#DC2626" />
-        <StatBox label="Lost" count={reports?.lost?.length || 0} color="#F59E0B" />
-        <StatBox label="Found" count={reports?.found?.length || 0} color="#22C55E" />
+        <StatBox label="Missing" count={reports?.missing?.length || 0} color={CONFIG.COLORS.primary} />
+        <StatBox label="Lost" count={reports?.lost?.length || 0} color={CONFIG.COLORS.warning} />
+        <StatBox label="Found" count={reports?.found?.length || 0} color={CONFIG.COLORS.success} />
       </View>
 
       <View style={styles.section}>
@@ -102,45 +103,45 @@ function MenuItem({ label, value }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  container: { flex: 1, backgroundColor: CONFIG.COLORS.background },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
   welcomeIcon: { fontSize: 64 },
   welcomeTitle: { fontSize: 24, fontWeight: 'bold', marginTop: 16 },
-  welcomeText: { fontSize: 16, color: '#666', marginTop: 8, textAlign: 'center' },
+  welcomeText: { fontSize: 16, color: CONFIG.COLORS.textSecondary, marginTop: 8, textAlign: 'center' },
   loginButton: {
-    marginTop: 24, backgroundColor: '#DC2626', paddingHorizontal: 48,
+    marginTop: 24, backgroundColor: CONFIG.COLORS.primary, paddingHorizontal: 48,
     paddingVertical: 14, borderRadius: 12,
   },
   loginButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   registerButton: { marginTop: 12, paddingVertical: 14 },
-  registerButtonText: { color: '#DC2626', fontSize: 16 },
-  profileHeader: { alignItems: 'center', padding: 24, backgroundColor: '#fff' },
+  registerButtonText: { color: CONFIG.COLORS.primary, fontSize: 16 },
+  profileHeader: { alignItems: 'center', padding: 24, backgroundColor: CONFIG.COLORS.card },
   avatar: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#DC2626',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: CONFIG.COLORS.primary,
     justifyContent: 'center', alignItems: 'center',
   },
   avatarText: { color: '#fff', fontSize: 32, fontWeight: 'bold' },
   name: { fontSize: 22, fontWeight: 'bold', marginTop: 12 },
-  email: { fontSize: 14, color: '#666', marginTop: 4 },
-  credibility: { fontSize: 14, color: '#22C55E', marginTop: 8, fontWeight: '600' },
+  email: { fontSize: 14, color: CONFIG.COLORS.textSecondary, marginTop: 4 },
+  credibility: { fontSize: 14, color: CONFIG.COLORS.success, marginTop: 8, fontWeight: '600' },
   stats: { flexDirection: 'row', padding: 12, gap: 12 },
   statBox: {
-    flex: 1, backgroundColor: '#fff', padding: 16, borderRadius: 12,
+    flex: 1, backgroundColor: CONFIG.COLORS.card, padding: 16, borderRadius: 12,
     alignItems: 'center', borderTopWidth: 3, elevation: 1,
   },
   statCount: { fontSize: 24, fontWeight: 'bold' },
-  statLabel: { fontSize: 12, color: '#666', marginTop: 4 },
-  section: { marginTop: 12, backgroundColor: '#fff', padding: 16 },
+  statLabel: { fontSize: 12, color: CONFIG.COLORS.textSecondary, marginTop: 4 },
+  section: { marginTop: 12, backgroundColor: CONFIG.COLORS.card, padding: 16 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   menuItem: {
     flexDirection: 'row', justifyContent: 'space-between',
     paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
   },
   menuLabel: { fontSize: 16, color: '#333' },
-  menuValue: { fontSize: 16, color: '#888' },
+  menuValue: { fontSize: 16, color: CONFIG.COLORS.textMuted },
   logoutButton: {
-    margin: 16, padding: 16, backgroundColor: '#fff', borderRadius: 12,
-    alignItems: 'center', borderWidth: 1, borderColor: '#DC2626',
+    margin: 16, padding: 16, backgroundColor: CONFIG.COLORS.card, borderRadius: 12,
+    alignItems: 'center', borderWidth: 1, borderColor: CONFIG.COLORS.primary,
   },
-  logoutText: { color: '#DC2626', fontSize: 16, fontWeight: '600' },
+  logoutText: { color: CONFIG.COLORS.primary, fontSize: 16, fontWeight: '600' },
 });

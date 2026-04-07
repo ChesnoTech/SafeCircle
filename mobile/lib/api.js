@@ -1,9 +1,7 @@
-import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import { CONFIG } from './config';
 
-// Android emulator uses 10.0.2.2 to reach host; physical devices need the LAN IP
-const DEFAULT_HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
-const API_URL = process.env.EXPO_PUBLIC_API_URL || `http://${DEFAULT_HOST}:3000/api`;
+const API_URL = CONFIG.API_URL;
 
 let accessToken = null;
 

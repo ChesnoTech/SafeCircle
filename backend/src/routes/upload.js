@@ -1,10 +1,12 @@
 import { randomUUID } from 'crypto';
 import sharp from 'sharp';
+import { config } from '../config/index.js';
 
 export async function uploadRoutes(fastify) {
   // --- Upload photo ---
   fastify.post('/', {
     preHandler: [fastify.authenticate],
+    config: { rateLimit: { max: config.uploadRateLimit, timeWindow: '1 minute' } },
   }, async (request, reply) => {
     const file = await request.file();
     if (!file) {

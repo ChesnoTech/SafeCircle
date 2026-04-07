@@ -1,3 +1,6 @@
+import { getGridCellsInRadius } from '../utils/geo.js';
+import { config } from '../config/index.js';
+
 export async function reportRoutes(fastify) {
   // --- Create missing person report ---
   fastify.post('/missing', {
@@ -17,9 +20,9 @@ export async function reportRoutes(fastify) {
           eye_color: { type: 'string' },
           height_min_cm: { type: 'integer' },
           height_max_cm: { type: 'integer' },
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
-          last_seen_address: { type: 'string' },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
+          last_seen_address: { type: 'string', maxLength: config.maxStringLength },
           last_seen_at: { type: 'string', format: 'date-time' },
           clothing_description: { type: 'string' },
           circumstances: { type: 'string' },
@@ -55,8 +58,8 @@ export async function reportRoutes(fastify) {
 
     const report = result.rows[0];
 
-    // Broadcast to Socket.IO clients in the area
-    fastify.io.emit('new_alert', {
+    // Broadcast to Socket.IO clients in affected region cells
+    const alertPayload = {
       id: report.id,
       name: report.name,
       photo_url: report.photo_url,
@@ -64,7 +67,11 @@ export async function reportRoutes(fastify) {
       longitude,
       alert_radius_km,
       created_at: report.created_at,
-    });
+    };
+    const cells = getGridCellsInRadius(latitude, longitude, alert_radius_km);
+    for (const cell of cells) {
+      fastify.io.to(`region:${cell}`).emit('new_alert', alertPayload);
+    }
 
     // TODO: Queue FCM push notification job via BullMQ
 
@@ -145,8 +152,8 @@ export async function reportRoutes(fastify) {
       return reply.code(404).send({ error: 'Report not found or not owned by you' });
     }
 
-    // Broadcast resolution
     if (status === 'resolved') {
+      // Broadcast to all connected clients (resolution is low-frequency, broad relevance)
       fastify.io.emit('alert_resolved', { id: request.params.id });
     }
 

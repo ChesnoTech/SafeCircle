@@ -1,3 +1,5 @@
+import { config } from '../config/index.js';
+
 export async function userRoutes(fastify) {
   // --- Get current user profile ---
   fastify.get('/me', {
@@ -23,6 +25,17 @@ export async function userRoutes(fastify) {
   // --- Update profile ---
   fastify.patch('/me', {
     preHandler: [fastify.authenticate],
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', maxLength: config.maxStringLength },
+          phone: { type: 'string', maxLength: config.maxStringLength },
+          photo_url: { type: 'string', maxLength: config.maxStringLength },
+          language: { type: 'string', maxLength: config.maxStringLength },
+        },
+      },
+    },
   }, async (request, reply) => {
     const allowed = ['name', 'phone', 'photo_url', 'language'];
     const updates = [];
@@ -58,8 +71,8 @@ export async function userRoutes(fastify) {
         type: 'object',
         required: ['latitude', 'longitude'],
         properties: {
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
         },
       },
     },

@@ -1,19 +1,21 @@
+import { config } from '../config/index.js';
+
 export async function intelRoutes(fastify) {
   // --- Submit anonymous report (NO auth required) ---
   fastify.post('/report', {
-    config: { rateLimit: { max: 5, timeWindow: '1 hour' } },
+    config: { rateLimit: { max: config.intelRateLimit, timeWindow: '1 hour' } },
     schema: {
       body: {
         type: 'object',
         required: ['category', 'description', 'latitude', 'longitude'],
         properties: {
-          category: { type: 'string' },
-          subcategory: { type: 'string' },
-          description: { type: 'string', minLength: 10 },
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
-          address: { type: 'string' },
-          photo_url: { type: 'string' },
+          category: { type: 'string', maxLength: config.maxStringLength },
+          subcategory: { type: 'string', maxLength: config.maxStringLength },
+          description: { type: 'string', minLength: 10, maxLength: config.maxStringLength },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
+          address: { type: 'string', maxLength: config.maxStringLength },
+          photo_url: { type: 'string', maxLength: config.maxStringLength },
           severity: { type: 'string', enum: ['low', 'medium', 'high', 'urgent'] },
         },
       },
@@ -70,8 +72,8 @@ export async function intelRoutes(fastify) {
         type: 'object',
         required: ['latitude', 'longitude'],
         properties: {
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
+          latitude: { type: 'number', minimum: config.latitudeRange.min, maximum: config.latitudeRange.max },
+          longitude: { type: 'number', minimum: config.longitudeRange.min, maximum: config.longitudeRange.max },
           radius_km: { type: 'integer', default: 10 },
         },
       },

@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
 import multipart from '@fastify/multipart';
 import { Server } from 'socket.io';
+import { config } from './config/index.js';
 import { dbPlugin } from './plugins/db.js';
 import { authPlugin } from './plugins/auth.js';
 import { redisPlugin } from './plugins/redis.js';
@@ -17,7 +18,7 @@ import { userRoutes } from './routes/users.js';
 
 const app = Fastify({
   logger: {
-    transport: process.env.NODE_ENV === 'development'
+    transport: config.nodeEnv === 'development'
       ? { target: 'pino-pretty', options: { colorize: true } }
       : undefined,
   },
@@ -25,8 +26,8 @@ const app = Fastify({
 
 // --- Plugins ---
 await app.register(cors, { origin: true });
-await app.register(rateLimit, { max: 100, timeWindow: '1 minute' });
-await app.register(multipart, { limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB
+await app.register(rateLimit, { max: config.globalRateLimit, timeWindow: '1 minute' });
+await app.register(multipart, { limits: { fileSize: config.maxFileSizeMB * 1024 * 1024 } });
 await app.register(dbPlugin);
 await app.register(redisPlugin);
 await app.register(authPlugin);
@@ -57,14 +58,20 @@ const io = new Server(app.server, {
 io.on('connection', (socket) => {
   app.log.info(`Socket connected: ${socket.id}`);
 
-  // Client joins geographic region rooms
   socket.on('join_region', (gridCell) => {
     socket.join(`region:${gridCell}`);
   });
 
-  // Client subscribes to a specific report's sightings
+  socket.on('leave_region', (gridCell) => {
+    socket.leave(`region:${gridCell}`);
+  });
+
   socket.on('watch_report', (reportId) => {
     socket.join(`report:${reportId}`);
+  });
+
+  socket.on('unwatch_report', (reportId) => {
+    socket.leave(`report:${reportId}`);
   });
 
   socket.on('disconnect', () => {
@@ -72,14 +79,12 @@ io.on('connection', (socket) => {
   });
 });
 
-// Make io accessible to routes
 app.decorate('io', io);
 
 // --- Start ---
-const PORT = process.env.PORT || 3000;
 try {
-  await app.listen({ port: PORT, host: '0.0.0.0' });
-  app.log.info(`SafeCircle API running on port ${PORT}`);
+  await app.listen({ port: config.port, host: '0.0.0.0' });
+  app.log.info(`SafeCircle API running on port ${config.port}`);
 } catch (err) {
   app.log.error(err);
   process.exit(1);

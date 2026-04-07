@@ -1,18 +1,20 @@
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';
+import { CONFIG } from '../../lib/config';
+
+const TAB_ICONS = { Home: '🏠', Map: '🗺️', Report: '🚨', Profile: '👤' };
 
 function TabIcon({ name, focused }) {
-  const icons = { Home: '🏠', Map: '🗺️', Report: '🚨', Profile: '👤' };
-  return <Text style={{ fontSize: focused ? 28 : 24 }}>{icons[name] || '•'}</Text>;
+  return <Text style={{ fontSize: focused ? 28 : 24 }}>{TAB_ICONS[name] || '•'}</Text>;
 }
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#DC2626',
-        tabBarInactiveTintColor: '#666',
-        headerStyle: { backgroundColor: '#DC2626' },
+        tabBarActiveTintColor: CONFIG.COLORS.primary,
+        tabBarInactiveTintColor: CONFIG.COLORS.textSecondary,
+        headerStyle: { backgroundColor: CONFIG.COLORS.primary },
         headerTintColor: '#fff',
       }}
     >
