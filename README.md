@@ -35,7 +35,7 @@ When cases resolve, users can share their reunification story. Public feed of su
 
 ## Features
 
-### Completed (Sprint 1-7)
+### Completed (Sprint 1-8)
 
 - **Real-time alerts** - Socket.IO region-based rooms, geographic grid cells
 - **Config-driven architecture** - zero hardcoded values, all env vars
@@ -67,10 +67,13 @@ When cases resolve, users can share their reunification story. Public feed of su
 - **Lost & Found matching UI** - item detail screen with auto-matched results, ownership verification quiz flow
 - **Report sharing** - native share sheet for missing person alerts and lost/found items, deep link support (safecircle:// scheme)
 - **Analytics dashboard** - stats cards on home screen, heatmap overlay toggle on map, trending areas ranked list
+- **Resolution flow** - mark cases resolved with type/story/rating, success stories feed with celebrations
+- **Notification preferences** - toggles for missing/L&F/intel alerts, radius selector, quiet hours
+- **Lost & Found browse** - dedicated nearby items screen with lost/found tabs, category icons, distance
+- **Law enforcement dashboard** - React/Vite web app with role-based auth, report viewer, moderation queue, search, analytics overview
 
 ### Planned
 
-- Web dashboard for law enforcement
 - Offline map tiles
 
 ## Project Structure
@@ -93,6 +96,13 @@ SafeCircle/
 │   │   └── messages/       # Conversation list + chat
 │   ├── lib/                # Shared utilities (api, config, i18n, socket, store)
 │   └── locales/            # Translation files (en, ar, ru)
+├── dashboard/
+│   ├── src/
+│   │   ├── components/     # React pages (Dashboard, Reports, Flags, Search)
+│   │   ├── api.js          # API client with auth
+│   │   ├── App.jsx         # Router + role-based access
+│   │   └── styles.css      # Full CSS design system
+│   └── index.html
 ├── docker-compose.yml
 └── docs/                   # Design docs, competitor research
 ```
@@ -128,6 +138,13 @@ cd backend && npm install && npm run dev
 ### Mobile
 ```bash
 cd mobile && npm install && npx expo start
+```
+
+### Dashboard (Law Enforcement)
+```bash
+cd dashboard && npm install && npm run dev
+# Opens at http://localhost:3001
+# Login with an officer/authority/admin account
 ```
 
 ## API Endpoints

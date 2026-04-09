@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, TextInput, ActivityIndicator, Modal, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getReport, getSightings, reportSighting, getReportPhotos } from '../../lib/api';
+import { getReport, getSightings, reportSighting, getReportPhotos, resolveReport } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { watchReport, unwatchReport, getSocket } from '../../lib/socket';
 import { shareAlert } from '../../lib/sharing';
@@ -27,6 +27,10 @@ export default function AlertDetailScreen() {
   const [showSightingForm, setShowSightingForm] = useState(false);
   const [sightingNotes, setSightingNotes] = useState('');
   const [confidence, setConfidence] = useState('unsure');
+  const [showResolveModal, setShowResolveModal] = useState(false);
+  const [resolveType, setResolveType] = useState('found_safe');
+  const [resolveStory, setResolveStory] = useState('');
+  const [resolveRating, setResolveRating] = useState(5);
 
   // Subscribe to real-time sighting updates for this report
   useEffect(() => {
@@ -74,6 +78,24 @@ export default function AlertDetailScreen() {
       longitude,
       confidence,
       notes: sightingNotes,
+    });
+  };
+
+  const resolveMutation = useMutation({
+    mutationFn: (data) => resolveReport(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['report', id] });
+      setShowResolveModal(false);
+      Alert.alert(t('resolution.resolved'), t('resolution.resolvedMessage'));
+    },
+    onError: (err) => Alert.alert(t('common.error'), err.message),
+  });
+
+  const handleResolve = () => {
+    resolveMutation.mutate({
+      resolution_type: resolveType,
+      story: resolveStory || undefined,
+      rating: resolveRating,
     });
   };
 
@@ -237,7 +259,91 @@ export default function AlertDetailScreen() {
         </>
       )}
 
+      {/* Resolve button (only for active reports) */}
+      {report.status === 'active' && (
+        <TouchableOpacity
+          style={styles.resolveButton}
+          onPress={() => setShowResolveModal(true)}
+        >
+          <Text style={styles.resolveButtonText}>{t('resolution.markResolved')}</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Stories link */}
+      <TouchableOpacity style={styles.storiesLink} onPress={() => router.push('/stories')}>
+        <Text style={styles.storiesLinkIcon}>{'\uD83C\uDF1F'}</Text>
+        <Text style={styles.storiesLinkText}>{t('resolution.viewStories')}</Text>
+      </TouchableOpacity>
+
       <View style={{ height: 40 }} />
+
+      {/* Resolve Modal */}
+      <Modal
+        visible={showResolveModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowResolveModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{t('resolution.resolveTitle')}</Text>
+
+            <Text style={styles.modalLabel}>{t('resolution.resolutionType')}</Text>
+            <View style={styles.resolveTypes}>
+              {['found_safe', 'returned', 'resolved', 'closed'].map((rt) => (
+                <TouchableOpacity
+                  key={rt}
+                  style={[styles.resolveTypeBtn, resolveType === rt && styles.resolveTypeBtnActive]}
+                  onPress={() => setResolveType(rt)}
+                >
+                  <Text style={[styles.resolveTypeText, resolveType === rt && styles.resolveTypeTextActive]}>
+                    {t(`resolution.${rt}`)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.modalLabel}>{t('resolution.shareStory')}</Text>
+            <TextInput
+              style={[styles.input, styles.multiline]}
+              placeholder={t('resolution.storyPlaceholder')}
+              value={resolveStory}
+              onChangeText={setResolveStory}
+              multiline
+            />
+
+            <Text style={styles.modalLabel}>{t('resolution.rating')}</Text>
+            <View style={styles.ratingRow}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <TouchableOpacity key={star} onPress={() => setResolveRating(star)}>
+                  <Text style={[styles.star, star <= resolveRating && styles.starActive]}>
+                    {'\u2605'}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              style={styles.resolveSubmitBtn}
+              onPress={handleResolve}
+              disabled={resolveMutation.isPending}
+            >
+              {resolveMutation.isPending ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.resolveSubmitText}>{t('resolution.confirm')}</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.modalCloseBtn}
+              onPress={() => setShowResolveModal(false)}
+            >
+              <Text style={styles.modalCloseText}>{t('common.cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -302,4 +408,45 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginTop: 12,
   },
   submitText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  // Resolve
+  resolveButton: {
+    backgroundColor: '#22C55E', padding: 16, borderRadius: 12,
+    alignItems: 'center', margin: 16,
+  },
+  resolveButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  storiesLink: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    padding: 12, marginHorizontal: 16,
+  },
+  storiesLinkIcon: { fontSize: 18, marginRight: 6 },
+  storiesLinkText: { fontSize: 15, color: '#6366F1', fontWeight: '600' },
+  // Resolve Modal
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalContent: {
+    backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20,
+    padding: 20, maxHeight: '80%',
+  },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
+  modalLabel: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8, marginTop: 12 },
+  resolveTypes: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  resolveTypeBtn: {
+    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 16,
+    backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#e0e0e0',
+  },
+  resolveTypeBtnActive: { backgroundColor: '#22C55E', borderColor: '#22C55E' },
+  resolveTypeText: { fontSize: 13, color: '#333' },
+  resolveTypeTextActive: { color: '#fff', fontWeight: 'bold' },
+  ratingRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
+  star: { fontSize: 28, color: '#ddd' },
+  starActive: { color: '#F59E0B' },
+  resolveSubmitBtn: {
+    backgroundColor: '#22C55E', padding: 14, borderRadius: 12,
+    alignItems: 'center', marginTop: 20,
+  },
+  resolveSubmitText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  modalCloseBtn: {
+    padding: 14, borderRadius: 12, alignItems: 'center', marginTop: 8,
+    borderWidth: 1, borderColor: '#e0e0e0',
+  },
+  modalCloseText: { fontSize: 16, color: '#333' },
 });
