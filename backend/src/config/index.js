@@ -77,4 +77,7 @@ export const config = {
   // Moderation
   moderationFlagRateLimit: parseInt(process.env.MODERATION_FLAG_RATE_LIMIT || '10'),
   moderationPageSize: parseInt(process.env.MODERATION_PAGE_SIZE || '20'),
+
+  // Photos
+  maxPhotosPerReport: parseInt(process.env.MAX_PHOTOS_PER_REPORT || '5'),
 };

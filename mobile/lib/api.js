@@ -118,6 +118,9 @@ export const createMissingReport = (data) =>
   api('/reports/missing', { method: 'POST', body: JSON.stringify(data) });
 
 export const getReport = (id) => api(`/reports/missing/${id}`);
+export const addReportPhotos = (reportId, photoUrls) =>
+  api(`/reports/missing/${reportId}/photos`, { method: 'POST', body: JSON.stringify({ photo_urls: photoUrls }) });
+export const getReportPhotos = (reportId) => api(`/reports/missing/${reportId}/photos`);
 
 // --- Sightings ---
 export const reportSighting = (data) =>

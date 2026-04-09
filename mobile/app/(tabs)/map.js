@@ -1,5 +1,6 @@
 import { ActivityIndicator, View, Text, StyleSheet } from 'react-native';
-import MapView, { Marker, Circle } from 'react-native-maps';
+import ClusteredMapView from 'react-native-map-clustering';
+import { Marker, Circle } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import { useLocationStore, useAlertStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
@@ -23,11 +24,18 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      <MapView
+      <ClusteredMapView
         style={styles.map}
         initialRegion={{ latitude, longitude, ...MAP_DELTAS }}
         showsUserLocation
         showsMyLocationButton
+        clusterColor={CONFIG.COLORS.primary}
+        clusterTextColor="#fff"
+        clusterFontFamily="System"
+        radius={40}
+        minZoomLevel={0}
+        maxZoom={16}
+        animationEnabled={false}
       >
         {alerts.map((alert) => (
           <Marker
@@ -50,7 +58,7 @@ export default function MapScreen() {
             strokeWidth={1}
           />
         ))}
-      </MapView>
+      </ClusteredMapView>
 
       <View style={styles.legend}>
         <Text style={styles.legendText}>

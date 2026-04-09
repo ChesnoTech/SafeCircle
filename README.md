@@ -35,7 +35,7 @@ When cases resolve, users can share their reunification story. Public feed of su
 
 ## Features
 
-### Completed (Sprint 1-4)
+### Completed (Sprint 1-5)
 
 - **Real-time alerts** - Socket.IO region-based rooms, geographic grid cells
 - **Config-driven architecture** - zero hardcoded values, all env vars
@@ -55,14 +55,17 @@ When cases resolve, users can share their reunification story. Public feed of su
 - **Credibility scoring** - event-based points (0-100), leaderboard, configurable weights
 - **Content moderation** - flag/review/action system, role-based moderator access, ban/hide/remove
 - **In-app messaging** - secure conversations between finders and reporters, real-time via Socket.IO
+- **Map clustering** - supercluster-based marker grouping for dense alert areas
+- **Offline caching** - AsyncStorage alert cache, draft reports, sync queue for offline-first usage
+- **Multi-photo support** - up to 5 photos per missing person report, horizontal gallery in detail view
+- **Messages tab** - dedicated bottom tab for conversation access
 
 ### Planned
 
-- Map clustering for dense alert areas
-- Offline caching and draft reports
 - Web dashboard for law enforcement
 - Community analytics and heat maps
-- Multi-photo support for reports
+- Photo evidence for sightings
+- Offline map tiles
 
 ## Project Structure
 
@@ -108,6 +111,7 @@ docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/mi
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/005_credibility.sql
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/006_moderation.sql
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/007_messaging.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/008_report_photos.sql
 
 # Start API
 cd backend && npm install && npm run dev
@@ -132,6 +136,8 @@ cd mobile && npm install && npx expo start
 | POST | /api/items/lost | Report lost item |
 | POST | /api/items/found | Report found item (auto-match) |
 | POST | /api/intel | Submit anonymous intel |
+| POST | /api/reports/missing/:id/photos | Add photos to report (up to 5) |
+| GET | /api/reports/missing/:id/photos | Get report photos |
 | POST | /api/sightings | Report sighting |
 | PUT | /api/notifications/token | Register FCM token |
 | PUT | /api/notifications/preferences | Update notification prefs |
