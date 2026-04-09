@@ -35,7 +35,7 @@ When cases resolve, users can share their reunification story. Public feed of su
 
 ## Features
 
-### Completed (Sprint 1-8)
+### Completed (Sprint 1-9)
 
 - **Real-time alerts** - Socket.IO region-based rooms, geographic grid cells
 - **Config-driven architecture** - zero hardcoded values, all env vars
@@ -71,6 +71,10 @@ When cases resolve, users can share their reunification story. Public feed of su
 - **Notification preferences** - toggles for missing/L&F/intel alerts, radius selector, quiet hours
 - **Lost & Found browse** - dedicated nearby items screen with lost/found tabs, category icons, distance
 - **Law enforcement dashboard** - React/Vite web app with role-based auth, report viewer, moderation queue, search, analytics overview
+- **Credibility leaderboard** - ranked top contributors with medal icons, personal score banner, report/sighting counts
+- **Community intel view** - browse nearby intel reports with severity filters (urgent/high/medium/low), color-coded cards
+- **Dashboard CSV export** - export filtered reports to CSV from law enforcement dashboard, status filter, BOM-prefixed UTF-8
+- **Dark mode** - system/light/dark theme preference, persisted in AsyncStorage, dark color palette, ThemeProvider context
 
 ### Planned
 
@@ -191,6 +195,7 @@ cd dashboard && npm install && npm run dev
 | PATCH | /api/notifications/history/:id/read | Mark notification read |
 | PATCH | /api/notifications/history/read-all | Mark all read |
 | GET | /api/items/lost/:id/matches | Get auto-matched found items |
+| GET | /api/intel/nearby | Get intel reports near location |
 | GET | /api/health | Health check |
 
 ## Internationalization

@@ -27,7 +27,7 @@ export const CONFIG = {
   MAX_PHOTO_QUALITY: 0.8,
   ALLOWED_IMAGE_TYPES: ['images'],
 
-  // Theme colors
+  // Theme colors — Light
   COLORS: {
     primary: '#DC2626',
     warning: '#F59E0B',
@@ -41,6 +41,22 @@ export const CONFIG = {
     border: '#e0e0e0',
     error: '#DC2626',
     danger: '#EF4444',
+  },
+
+  // Theme colors — Dark
+  COLORS_DARK: {
+    primary: '#EF4444',
+    warning: '#FBBF24',
+    success: '#34D399',
+    info: '#818CF8',
+    background: '#111827',
+    card: '#1F2937',
+    text: '#F9FAFB',
+    textSecondary: '#D1D5DB',
+    textMuted: '#9CA3AF',
+    border: '#374151',
+    error: '#EF4444',
+    danger: '#F87171',
   },
 
   // Supported languages (code → native name)

@@ -7,16 +7,17 @@ import { connectSocket, disconnectSocket } from '../lib/socket';
 import { CONFIG } from '../lib/config';
 import { initI18n, t } from '../lib/i18n';
 import { registerForPushNotifications, onNotificationTapped, getLastNotificationResponse } from '../lib/notifications';
+import { ThemeProvider, useTheme } from '../lib/theme';
+import { useThemeStore } from '../lib/store';
 
 const queryClient = new QueryClient();
 
-export default function RootLayout() {
-  const [i18nReady, setI18nReady] = useState(false);
+function AppContent() {
+  const { colors, isDark } = useTheme();
   const notifResponseListener = useRef();
   const router = useRouter();
 
   useEffect(() => {
-    initI18n().then(() => setI18nReady(true));
     connectSocket();
 
     // Register push notifications after a short delay (wait for auth)
@@ -51,22 +52,15 @@ export default function RootLayout() {
     };
   }, []);
 
-  if (!i18nReady) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={CONFIG.COLORS.primary} />
-      </View>
-    );
-  }
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <StatusBar style="auto" />
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: CONFIG.COLORS.primary },
+          headerStyle: { backgroundColor: colors.primary },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
+          contentStyle: { backgroundColor: colors.background },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -85,9 +79,39 @@ export default function RootLayout() {
         <Stack.Screen name="trending" options={{ title: t('analytics.trending') }} />
         <Stack.Screen name="stories" options={{ title: t('resolution.storiesTitle') }} />
         <Stack.Screen name="items" options={{ title: t('matching.browseItems') }} />
+        <Stack.Screen name="leaderboard" options={{ title: t('leaderboard.title') }} />
+        <Stack.Screen name="intel" options={{ title: t('intel.viewTitle') }} />
         <Stack.Screen name="messages/index" options={{ title: t('messaging.conversations') }} />
         <Stack.Screen name="messages/[id]" options={{ title: t('messaging.conversations') }} />
       </Stack>
+    </>
+  );
+}
+
+export default function RootLayout() {
+  const [i18nReady, setI18nReady] = useState(false);
+  const loadPreference = useThemeStore((s) => s.loadPreference);
+
+  useEffect(() => {
+    Promise.all([
+      initI18n(),
+      loadPreference(),
+    ]).then(() => setI18nReady(true));
+  }, []);
+
+  if (!i18nReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={CONFIG.COLORS.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

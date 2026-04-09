@@ -57,7 +57,11 @@
     "missingSubtitle": "Report a missing person — instant alert to nearby users",
     "lostSubtitle": "Report a lost item — automatic matching with found items",
     "foundSubtitle": "Report a found item or person — help reunite",
-    "suspiciousSubtitle": "Anonymous report — helps detect patterns"
+    "suspiciousSubtitle": "Anonymous report — helps detect patterns",
+    "urgent": "Urgent",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
   },
 
   "reportTypes": {
@@ -148,7 +152,12 @@
     "submitReport": "Submit Report",
     "submitting": "Submitting...",
     "selectCategory": "Select a category",
-    "minCharsError": "Description must be at least 10 characters"
+    "minCharsError": "Description must be at least 10 characters",
+    "viewTitle": "Community Intel",
+    "title": "Intel Reports",
+    "subtitle": "{{count}} reports nearby",
+    "noReports": "No intel reports in this area",
+    "away": "away"
   },
 
   "profile": {
@@ -368,4 +377,21 @@
     "intel": "Community intel",
     "radius": "Alert radius",
     "quietHours": "Quiet hours (no notifications)"
+  },
+
+  "leaderboard": {
+    "title": "Leaderboard",
+    "yourScore": "Your Credibility Score",
+    "reports": "{{count}} reports",
+    "sightings": "{{count}} sightings",
+    "topContributors": "Top {{count}} contributors",
+    "noData": "No leaderboard data yet"
+  },
+
+  "theme": {
+    "title": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "darkMode": "Dark Mode"
   }
