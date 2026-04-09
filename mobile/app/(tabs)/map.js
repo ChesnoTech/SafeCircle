@@ -1,7 +1,10 @@
-import { ActivityIndicator, View, Text, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import ClusteredMapView from 'react-native-map-clustering';
 import { Marker, Circle } from 'react-native-maps';
 import { useRouter } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
+import { getHeatmapData } from '../../lib/api';
 import { useLocationStore, useAlertStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
 import { t } from '../../lib/i18n';
@@ -12,6 +15,16 @@ export default function MapScreen() {
   const router = useRouter();
   const { latitude, longitude } = useLocationStore();
   const { alerts } = useAlertStore();
+  const [showHeatmap, setShowHeatmap] = useState(false);
+
+  const { data: heatmapData } = useQuery({
+    queryKey: ['heatmap'],
+    queryFn: getHeatmapData,
+    staleTime: 300000,
+    enabled: showHeatmap,
+  });
+
+  const heatmapPoints = heatmapData?.points || [];
 
   if (!latitude || !longitude) {
     return (
@@ -58,12 +71,40 @@ export default function MapScreen() {
             strokeWidth={1}
           />
         ))}
+
+        {/* Heatmap overlay: semi-transparent circles at recent report locations */}
+        {showHeatmap && heatmapPoints.map((point, i) => (
+          <Circle
+            key={`heat-${i}`}
+            center={{ latitude: point.latitude, longitude: point.longitude }}
+            radius={500}
+            fillColor="rgba(239, 68, 68, 0.25)"
+            strokeColor="rgba(239, 68, 68, 0.4)"
+            strokeWidth={0}
+          />
+        ))}
       </ClusteredMapView>
 
       <View style={styles.legend}>
         <Text style={styles.legendText}>
           {t('map.activeAlerts', { count: alerts.length })}
         </Text>
+        <View style={styles.legendActions}>
+          <TouchableOpacity
+            style={[styles.legendButton, showHeatmap && styles.legendButtonActive]}
+            onPress={() => setShowHeatmap(!showHeatmap)}
+          >
+            <Text style={[styles.legendButtonText, showHeatmap && styles.legendButtonTextActive]}>
+              {t('analytics.heatmap')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.legendButton}
+            onPress={() => router.push('/trending')}
+          >
+            <Text style={styles.legendButtonText}>{t('analytics.trending')}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -81,4 +122,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15, shadowRadius: 4, alignItems: 'center',
   },
   legendText: { fontSize: 14, fontWeight: '600', color: CONFIG.COLORS.text },
+  legendActions: { flexDirection: 'row', marginTop: 8, gap: 8 },
+  legendButton: {
+    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16,
+    backgroundColor: '#f0f0f0',
+  },
+  legendButtonActive: { backgroundColor: CONFIG.COLORS.primary },
+  legendButtonText: { fontSize: 12, fontWeight: '600', color: CONFIG.COLORS.textSecondary },
+  legendButtonTextActive: { color: '#fff' },
 });

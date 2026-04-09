@@ -102,6 +102,9 @@ export const CONFIG = {
     'unknown', 'other',
   ],
 
+  // Deep linking
+  DEEP_LINK_SCHEME: process.env.EXPO_PUBLIC_DEEP_LINK_SCHEME || 'safecircle',
+
   // Notification urgency tiers
   URGENCY_TIERS: {
     CRITICAL: { color: '#DC2626', label: 'URGENT' },

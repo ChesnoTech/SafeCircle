@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getReport, getSightings, reportSighting, getReportPhotos } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { watchReport, unwatchReport, getSocket } from '../../lib/socket';
+import { shareAlert } from '../../lib/sharing';
 import { CONFIG } from '../../lib/config';
 import { t } from '../../lib/i18n';
 
@@ -116,8 +117,14 @@ export default function AlertDetailScreen() {
           {report.age && <Text style={styles.detail}>{t('alertDetail.age', { age: report.age })}</Text>}
           {report.gender !== 'unknown' && <Text style={styles.detail}>{t('alertDetail.gender', { gender: report.gender })}</Text>}
           <Text style={styles.time}>{getTimeAgo(report.created_at)}</Text>
-          <View style={[styles.statusBadge, report.status === 'active' ? styles.statusActive : styles.statusResolved]}>
-            <Text style={styles.statusText}>{report.status}</Text>
+          <View style={styles.headerActions}>
+            <View style={[styles.statusBadge, report.status === 'active' ? styles.statusActive : styles.statusResolved]}>
+              <Text style={styles.statusText}>{report.status}</Text>
+            </View>
+            <TouchableOpacity style={styles.shareButton} onPress={() => shareAlert(report)}>
+              <Text style={styles.shareIcon}>{'\uD83D\uDCE4'}</Text>
+              <Text style={styles.shareText}>{t('sharing.share')}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -246,10 +253,17 @@ const styles = StyleSheet.create({
   name: { fontSize: 22, fontWeight: 'bold', color: '#111' },
   detail: { fontSize: 15, color: '#444', marginTop: 2 },
   time: { fontSize: 13, color: '#888', marginTop: 4 },
-  statusBadge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginTop: 6 },
+  headerActions: { flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 8 },
+  statusBadge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   statusActive: { backgroundColor: '#FEE2E2' },
   statusResolved: { backgroundColor: '#DCFCE7' },
   statusText: { fontSize: 12, fontWeight: 'bold', textTransform: 'uppercase' },
+  shareButton: {
+    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10,
+    paddingVertical: 4, borderRadius: 12, backgroundColor: '#EEF2FF',
+  },
+  shareIcon: { fontSize: 14, marginRight: 4 },
+  shareText: { fontSize: 12, fontWeight: '600', color: '#6366F1' },
   section: { backgroundColor: '#fff', padding: 16, marginTop: 8 },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#333', marginBottom: 8 },
   sectionBody: { fontSize: 15, color: '#555', lineHeight: 22 },

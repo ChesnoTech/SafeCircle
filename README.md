@@ -35,7 +35,7 @@ When cases resolve, users can share their reunification story. Public feed of su
 
 ## Features
 
-### Completed (Sprint 1-6)
+### Completed (Sprint 1-7)
 
 - **Real-time alerts** - Socket.IO region-based rooms, geographic grid cells
 - **Config-driven architecture** - zero hardcoded values, all env vars
@@ -63,6 +63,10 @@ When cases resolve, users can share their reunification story. Public feed of su
 - **Unified search** - ILIKE text search across missing/lost/found with optional geo filtering
 - **Profile enhancements** - avatar upload, edit name/phone, search link in settings
 - **Community analytics** - platform stats, geographic heatmap, trending areas API
+- **Notification center** - push notification wiring with expo-notifications, FCM token registration, notification inbox with unread badges
+- **Lost & Found matching UI** - item detail screen with auto-matched results, ownership verification quiz flow
+- **Report sharing** - native share sheet for missing person alerts and lost/found items, deep link support (safecircle:// scheme)
+- **Analytics dashboard** - stats cards on home screen, heatmap overlay toggle on map, trending areas ranked list
 
 ### Planned
 
@@ -115,6 +119,7 @@ docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/mi
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/007_messaging.sql
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/008_report_photos.sql
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/009_sighting_photos.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/010_notification_log.sql
 
 # Start API
 cd backend && npm install && npm run dev
@@ -165,6 +170,10 @@ cd mobile && npm install && npx expo start
 | GET | /api/analytics/stats | Platform statistics |
 | GET | /api/analytics/heatmap | Geographic heatmap data |
 | GET | /api/analytics/trending | Trending areas |
+| GET | /api/notifications/history | Notification inbox |
+| PATCH | /api/notifications/history/:id/read | Mark notification read |
+| PATCH | /api/notifications/history/read-all | Mark all read |
+| GET | /api/items/lost/:id/matches | Get auto-matched found items |
 | GET | /api/health | Health check |
 
 ## Internationalization

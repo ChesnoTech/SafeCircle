@@ -168,4 +168,75 @@ export async function notificationRoutes(fastify) {
 
     return { ok: true };
   });
+
+  // --- Get notification history ---
+  fastify.get('/history', {
+    preHandler: [fastify.authenticate],
+    schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          page: { type: 'integer', minimum: 1, default: 1 },
+          limit: { type: 'integer', minimum: 1, maximum: 50, default: 20 },
+        },
+      },
+    },
+  }, async (request) => {
+    const userId = request.user.id;
+    const { page = 1, limit = 20 } = request.query;
+    const offset = (page - 1) * limit;
+
+    const [notifications, countResult] = await Promise.all([
+      fastify.db.query(
+        `SELECT id, title, body, type, report_id, report_type, tier, read, created_at
+         FROM notification_log
+         WHERE user_id = $1
+         ORDER BY created_at DESC
+         LIMIT $2 OFFSET $3`,
+        [userId, limit, offset]
+      ),
+      fastify.db.query(
+        'SELECT COUNT(*) AS count FROM notification_log WHERE user_id = $1 AND read = false',
+        [userId]
+      ),
+    ]);
+
+    return {
+      notifications: notifications.rows,
+      unread_count: parseInt(countResult.rows[0].count),
+    };
+  });
+
+  // --- Mark notification as read ---
+  fastify.patch('/history/:id/read', {
+    preHandler: [fastify.authenticate],
+  }, async (request, reply) => {
+    const userId = request.user.id;
+    const { id } = request.params;
+
+    const result = await fastify.db.query(
+      'UPDATE notification_log SET read = true WHERE id = $1 AND user_id = $2 RETURNING id',
+      [id, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return reply.code(404).send({ error: 'Notification not found' });
+    }
+
+    return { ok: true };
+  });
+
+  // --- Mark all notifications as read ---
+  fastify.patch('/history/read-all', {
+    preHandler: [fastify.authenticate],
+  }, async (request) => {
+    const userId = request.user.id;
+
+    await fastify.db.query(
+      'UPDATE notification_log SET read = true WHERE user_id = $1 AND read = false',
+      [userId]
+    );
+
+    return { ok: true };
+  });
 }
