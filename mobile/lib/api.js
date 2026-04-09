@@ -127,6 +127,9 @@ export const reportSighting = (data) =>
   api('/sightings', { method: 'POST', body: JSON.stringify(data) });
 
 export const getSightings = (reportId) => api(`/sightings/${reportId}`);
+export const addSightingPhotos = (sightingId, photoUrls) =>
+  api(`/sightings/${sightingId}/photos`, { method: 'POST', body: JSON.stringify({ photo_urls: photoUrls }) });
+export const getSightingPhotos = (sightingId) => api(`/sightings/${sightingId}/photos`);
 
 // --- Lost & Found ---
 export const reportLost = (data) =>
@@ -193,3 +196,19 @@ export const sendMessage = (conversationId, body) =>
     method: 'POST',
     body: JSON.stringify({ body }),
   });
+
+// --- Search ---
+export const searchReports = (q, type = 'all', lat, lng, radiusKm) => {
+  let url = `/search?q=${encodeURIComponent(q)}&type=${type}`;
+  if (lat && lng && radiusKm) url += `&latitude=${lat}&longitude=${lng}&radius_km=${radiusKm}`;
+  return api(url);
+};
+
+// --- Analytics ---
+export const getAnalyticsStats = () => api('/analytics/stats');
+export const getHeatmapData = () => api('/analytics/heatmap');
+export const getTrendingAreas = () => api('/analytics/trending');
+
+// --- Profile ---
+export const updateProfile = (data) =>
+  api('/users/me', { method: 'PATCH', body: JSON.stringify(data) });
