@@ -1,37 +1,38 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CONFIG } from '../../lib/config';
+import { t } from '../../lib/i18n';
 
 const reportTypes = [
   {
     id: 'missing',
     icon: '🚨',
-    title: 'Missing Person',
-    subtitle: 'Report a missing person — instant alert to nearby users',
+    titleKey: 'reportTypes.missingPerson.title',
+    subtitleKey: 'report.missingSubtitle',
     color: CONFIG.COLORS.primary,
     route: '/report/missing',
   },
   {
     id: 'lost',
     icon: '📦',
-    title: 'Lost Item',
-    subtitle: 'Report a lost item — automatic matching with found items',
+    titleKey: 'reportTypes.lostItem.title',
+    subtitleKey: 'report.lostSubtitle',
     color: CONFIG.COLORS.warning,
     route: '/report/lost',
   },
   {
     id: 'found',
     icon: '🔍',
-    title: 'Found Something',
-    subtitle: 'Report a found item or person — help reunite',
+    titleKey: 'reportTypes.foundSomething.title',
+    subtitleKey: 'report.foundSubtitle',
     color: CONFIG.COLORS.success,
     route: '/report/found',
   },
   {
     id: 'suspicious',
     icon: '👁️',
-    title: 'Suspicious Activity',
-    subtitle: 'Anonymous report — helps detect patterns',
+    titleKey: 'reportTypes.suspiciousActivity.title',
+    subtitleKey: 'report.suspiciousSubtitle',
     color: CONFIG.COLORS.info,
     route: '/report/suspicious',
   },
@@ -42,7 +43,7 @@ export default function ReportScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>What would you like to report?</Text>
+      <Text style={styles.title}>{t('report.whatToReport')}</Text>
 
       {reportTypes.map((type) => (
         <TouchableOpacity
@@ -52,8 +53,8 @@ export default function ReportScreen() {
         >
           <Text style={styles.icon}>{type.icon}</Text>
           <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>{type.title}</Text>
-            <Text style={styles.cardSubtitle}>{type.subtitle}</Text>
+            <Text style={styles.cardTitle}>{t(type.titleKey)}</Text>
+            <Text style={styles.cardSubtitle}>{t(type.subtitleKey)}</Text>
           </View>
           <Text style={styles.arrow}>›</Text>
         </TouchableOpacity>

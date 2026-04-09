@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { reportLost, uploadPhoto } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
+import { t } from '../../lib/i18n';
 
 export default function LostReportScreen() {
   const router = useRouter();
@@ -30,8 +31,8 @@ export default function LostReportScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!form.category) return setError('Select a category');
-    if (!form.description.trim()) return setError('Description is required');
+    if (!form.category) return setError(t('lostFound.selectCategory'));
+    if (!form.description.trim()) return setError(t('lostFound.descriptionRequired'));
     setError('');
     setLoading(true);
     try {
@@ -63,12 +64,12 @@ export default function LostReportScreen() {
         ) : (
           <View style={styles.photoPlaceholder}>
             <Text style={styles.photoIcon}>+</Text>
-            <Text style={styles.photoText}>Add Photo (optional)</Text>
+            <Text style={styles.photoText}>{t('lostFound.addPhotoOptional')}</Text>
           </View>
         )}
       </TouchableOpacity>
 
-      <Text style={styles.label}>Category *</Text>
+      <Text style={styles.label}>{t('lostFound.category')}</Text>
       <View style={styles.chipGrid}>
         {CONFIG.ITEM_CATEGORIES.map((cat) => (
           <TouchableOpacity
@@ -84,7 +85,7 @@ export default function LostReportScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Color</Text>
+      <Text style={styles.label}>{t('lostFound.color')}</Text>
       <View style={styles.colorRow}>
         {CONFIG.ITEM_COLORS.map((color) => (
           <TouchableOpacity
@@ -99,7 +100,7 @@ export default function LostReportScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Brand (optional)</Text>
+      <Text style={styles.label}>{t('lostFound.brand')}</Text>
       <View style={styles.chipGrid}>
         {CONFIG.ITEM_BRANDS.slice(0, 8).map((brand) => (
           <TouchableOpacity
@@ -114,25 +115,25 @@ export default function LostReportScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Description *</Text>
+      <Text style={styles.label}>{t('lostFound.description')}</Text>
       <TextInput
         style={[styles.input, styles.multiline]}
-        placeholder="Describe the item in detail (distinguishing marks, contents)"
+        placeholder={t('lostFound.describeItemDetail')}
         value={form.description}
         onChangeText={(v) => setForm({ ...form, description: v })}
         multiline
         numberOfLines={4}
       />
 
-      <Text style={styles.label}>Where did you lose it?</Text>
+      <Text style={styles.label}>{t('lostFound.whereDidYouLose')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Address, landmark, or station"
+        placeholder={t('lostFound.addressLandmark')}
         value={form.lost_address}
         onChangeText={(v) => setForm({ ...form, lost_address: v })}
       />
 
-      <Text style={styles.label}>Reward (optional)</Text>
+      <Text style={styles.label}>{t('lostFound.reward')}</Text>
       <TextInput
         style={styles.input}
         placeholder="0"
@@ -151,7 +152,7 @@ export default function LostReportScreen() {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.submitText}>Report Lost Item</Text>
+          <Text style={styles.submitText}>{t('lostFound.reportLostItem')}</Text>
         )}
       </TouchableOpacity>
 

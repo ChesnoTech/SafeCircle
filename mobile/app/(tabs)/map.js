@@ -3,6 +3,7 @@ import MapView, { Marker, Circle } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import { useLocationStore, useAlertStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
+import { t } from '../../lib/i18n';
 
 const MAP_DELTAS = { latitudeDelta: 0.05, longitudeDelta: 0.05 };
 
@@ -15,7 +16,7 @@ export default function MapScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={CONFIG.COLORS.primary} />
-        <Text style={styles.loadingText}>Getting location...</Text>
+        <Text style={styles.loadingText}>{t('map.gettingLocation')}</Text>
       </View>
     );
   }
@@ -33,7 +34,7 @@ export default function MapScreen() {
             key={alert.id}
             coordinate={{ latitude: alert.latitude, longitude: alert.longitude }}
             title={alert.name}
-            description={alert.clothing_description || 'Missing person'}
+            description={alert.clothing_description || t('map.missingPerson')}
             pinColor={CONFIG.COLORS.primary}
             onCalloutPress={() => router.push(`/alert/${alert.id}`)}
           />
@@ -53,7 +54,7 @@ export default function MapScreen() {
 
       <View style={styles.legend}>
         <Text style={styles.legendText}>
-          {alerts.length} active alert{alerts.length !== 1 ? 's' : ''} nearby
+          {t('map.activeAlerts', { count: alerts.length })}
         </Text>
       </View>
     </View>

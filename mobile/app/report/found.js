@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { reportFound, uploadPhoto } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
+import { t } from '../../lib/i18n';
 
 export default function FoundReportScreen() {
   const router = useRouter();
@@ -30,8 +31,8 @@ export default function FoundReportScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!form.category) return setError('Select a category');
-    if (!form.description.trim()) return setError('Description is required');
+    if (!form.category) return setError(t('lostFound.selectCategory'));
+    if (!form.description.trim()) return setError(t('lostFound.descriptionRequired'));
     setError('');
     setLoading(true);
     try {
@@ -49,8 +50,8 @@ export default function FoundReportScreen() {
       });
       if (result.matches_found > 0) {
         Alert.alert(
-          'Potential Match!',
-          `${result.matches_found} lost item(s) match your description. The owner(s) will be notified.`,
+          t('lostFound.matchTitle'),
+          t('lostFound.matchMessage', { count: result.matches_found }),
         );
       }
       router.back();
@@ -69,12 +70,12 @@ export default function FoundReportScreen() {
         ) : (
           <View style={styles.photoPlaceholder}>
             <Text style={styles.photoIcon}>+</Text>
-            <Text style={styles.photoText}>Add Photo (helps matching)</Text>
+            <Text style={styles.photoText}>{t('lostFound.addPhotoMatching')}</Text>
           </View>
         )}
       </TouchableOpacity>
 
-      <Text style={styles.label}>Category *</Text>
+      <Text style={styles.label}>{t('lostFound.category')}</Text>
       <View style={styles.chipGrid}>
         {CONFIG.ITEM_CATEGORIES.map((cat) => (
           <TouchableOpacity
@@ -90,7 +91,7 @@ export default function FoundReportScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Color</Text>
+      <Text style={styles.label}>{t('lostFound.color')}</Text>
       <View style={styles.colorRow}>
         {CONFIG.ITEM_COLORS.map((color) => (
           <TouchableOpacity
@@ -105,7 +106,7 @@ export default function FoundReportScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Brand (optional)</Text>
+      <Text style={styles.label}>{t('lostFound.brand')}</Text>
       <View style={styles.chipGrid}>
         {CONFIG.ITEM_BRANDS.slice(0, 8).map((brand) => (
           <TouchableOpacity
@@ -120,26 +121,26 @@ export default function FoundReportScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Description *</Text>
+      <Text style={styles.label}>{t('lostFound.description')}</Text>
       <TextInput
         style={[styles.input, styles.multiline]}
-        placeholder="Describe the item (keep some details private for verification)"
+        placeholder={t('lostFound.describeItemPrivate')}
         value={form.description}
         onChangeText={(v) => setForm({ ...form, description: v })}
         multiline
         numberOfLines={4}
       />
 
-      <Text style={styles.label}>Where did you find it?</Text>
+      <Text style={styles.label}>{t('lostFound.whereDidYouFind')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Address, landmark, or station"
+        placeholder={t('lostFound.addressLandmark')}
         value={form.found_address}
         onChangeText={(v) => setForm({ ...form, found_address: v })}
       />
 
       <View style={styles.switchRow}>
-        <Text style={styles.switchLabel}>Willing to hold the item?</Text>
+        <Text style={styles.switchLabel}>{t('lostFound.willingToHold')}</Text>
         <Switch
           value={form.willing_to_hold}
           onValueChange={(v) => setForm({ ...form, willing_to_hold: v })}
@@ -157,7 +158,7 @@ export default function FoundReportScreen() {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.submitText}>Report Found Item</Text>
+          <Text style={styles.submitText}>{t('lostFound.reportFoundItem')}</Text>
         )}
       </TouchableOpacity>
 

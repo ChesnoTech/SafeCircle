@@ -12,45 +12,52 @@
     "done": "Done",
     "search": "Search",
     "noResults": "No results found",
-    "networkError": "Network error. Please check your connection.",
+    "networkError": "No internet connection",
     "confirm": "Confirm",
     "delete": "Delete",
     "edit": "Edit",
     "close": "Close",
     "yes": "Yes",
     "no": "No",
-    "ok": "OK",
-    "greeting": "Hello, {{name}}"
+    "ok": "OK"
   },
 
   "auth": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "email": "Email",
-    "password": "Password",
-    "name": "Full Name",
-    "forgotPassword": "Forgot password?",
     "createAccount": "Create Account",
     "welcomeTitle": "Welcome to SafeCircle",
-    "welcomeSubtitle": "Helping communities stay safe, together.",
-    "noAccount": "Don't have an account?",
-    "haveAccount": "Already have an account?",
-    "signInError": "Invalid email or password",
-    "signUpError": "Could not create account. Please try again.",
-    "emailRequired": "Email is required",
-    "passwordRequired": "Password is required",
-    "nameRequired": "Name is required"
+    "welcomeSubtitle": "Community-powered safety",
+    "signInToReport": "Sign in to report and receive alerts",
+    "fullName": "Full name",
+    "email": "Email",
+    "password": "Password",
+    "noAccount": "Don't have an account? Register",
+    "haveAccount": "Already have an account? Sign In",
+    "noInternet": "No internet connection. Please check your network.",
+    "genericError": "Something went wrong"
   },
 
   "home": {
-    "nearbyAlerts": "Nearby Alerts",
-    "noAlertsTitle": "All Clear",
-    "noAlertsSubtitle": "No alerts in your area right now.",
-    "lastUpdated": "Last updated {{time}}",
-    "pullToRefresh": "Pull to refresh",
+    "activeAlerts": "Active Alerts Near You",
+    "alertsCount": "{{count}} alerts within {{radius}} km",
+    "gettingLocation": "Getting your location...",
+    "loadingAlerts": "Loading alerts...",
+    "noInternet": "No internet connection",
+    "failedToLoad": "Failed to load alerts",
+    "noActiveAlerts": "No active alerts nearby",
+    "areaSafe": "Your area is safe right now",
+    "age": "Age: {{age}}",
     "kmAway": "{{distance}} km away",
-    "viewAll": "View All",
-    "recentActivity": "Recent Activity"
+    "sightings": "{{count}} sightings"
+  },
+
+  "report": {
+    "whatToReport": "What would you like to report?",
+    "missingSubtitle": "Report a missing person — instant alert to nearby users",
+    "lostSubtitle": "Report a lost item — automatic matching with found items",
+    "foundSubtitle": "Report a found item or person — help reunite",
+    "suspiciousSubtitle": "Anonymous report — helps detect patterns"
   },
 
   "reportTypes": {
@@ -73,62 +80,75 @@
   },
 
   "missing": {
-    "fullName": "Full Name",
-    "approximateAge": "Approximate Age",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "other": "Other",
-    "unknown": "Unknown",
-    "clothingDescription": "Clothing Description",
-    "lastSeenLocation": "Last Seen Location",
-    "circumstances": "Circumstances",
+    "quickAlertBanner": "Quick alert — photo + name sends an instant alert",
+    "takePhoto": "Take Photo",
+    "chooseFromGallery": "Or choose from gallery",
+    "chooseDifferent": "Choose different photo",
+    "nameLabel": "Name *",
+    "namePlaceholder": "Full name of missing person",
+    "ageLabel": "Age (helps prioritize alert)",
+    "agePlaceholder": "Approximate age",
     "alertRadius": "Alert Radius (km)",
-    "sendAlert": "Send Alert",
-    "photoRequired": "A photo is required",
+    "sendAlertNow": "Send Alert Now",
+    "alertSentTitle": "Alert Sent!",
+    "alertSentMessage": "Nearby users have been alerted in {{seconds}}s. Add more details below to help the search.",
+    "alertLive": "Alert is live — add details to help the search",
+    "gender": "Gender",
+    "male": "male",
+    "female": "female",
+    "other": "other",
+    "unknown": "unknown",
+    "clothingDescription": "Clothing Description",
+    "whatWearing": "What were they wearing?",
+    "lastSeenLocation": "Last Seen Location",
+    "addressOrLandmark": "Address or landmark",
+    "circumstances": "Circumstances",
+    "anyDetails": "Any additional details that could help",
+    "skipForNow": "Skip for now",
+    "updateReport": "Update Report",
+    "photoRequired": "Photo is required for immediate alert",
     "nameRequired": "Name is required",
-    "heightCm": "Height (cm)",
-    "distinguishingFeatures": "Distinguishing Features",
-    "lastSeenTime": "Last Seen Time"
+    "cameraPermission": "Camera permission is required"
   },
 
   "lostFound": {
-    "category": "Category",
-    "description": "Description",
-    "address": "Address",
-    "reward": "Reward",
-    "willingToHold": "I can hold this item for the owner",
+    "category": "Category *",
+    "color": "Color",
+    "brand": "Brand (optional)",
+    "description": "Description *",
+    "describeItemDetail": "Describe the item in detail (distinguishing marks, contents)",
+    "describeItemPrivate": "Describe the item (keep some details private for verification)",
+    "whereDidYouLose": "Where did you lose it?",
+    "whereDidYouFind": "Where did you find it?",
+    "addressLandmark": "Address, landmark, or station",
+    "reward": "Reward (optional)",
+    "willingToHold": "Willing to hold the item?",
+    "addPhotoOptional": "Add Photo (optional)",
+    "addPhotoMatching": "Add Photo (helps matching)",
     "reportLostItem": "Report Lost Item",
     "reportFoundItem": "Report Found Item",
-    "matchFound": "A potential match has been found!",
-    "contactOwner": "Contact Owner",
-    "contactFinder": "Contact Finder",
-    "noMatchYet": "No match yet. We will notify you if one appears."
-  },
-
-  "categories": {
-    "wallet": "Wallet",
-    "phone": "Phone",
-    "keys": "Keys",
-    "bag": "Bag",
-    "documents": "Documents",
-    "jewelry": "Jewelry",
-    "electronics": "Electronics",
-    "other": "Other"
+    "selectCategory": "Select a category",
+    "descriptionRequired": "Description is required",
+    "matchTitle": "Potential Match!",
+    "matchMessage": "{{count}} lost item(s) match your description. The owner(s) will be notified."
   },
 
   "intel": {
-    "anonymous": "Anonymous",
-    "anonymousBanner": "Your identity will not be shared with anyone.",
+    "anonymousBanner": "This report is completely anonymous",
+    "category": "Category *",
+    "descriptionLabel": "Description * (min 10 chars)",
+    "describeObservation": "Describe what you observed",
+    "location": "Location",
+    "addressOptional": "Address or landmark (optional)",
     "severity": "Severity",
-    "low": "Low",
-    "medium": "Medium",
-    "high": "High",
-    "urgent": "Urgent",
+    "low": "low",
+    "medium": "medium",
+    "high": "high",
+    "urgent": "urgent",
     "submitReport": "Submit Report",
-    "whatDidYouSee": "What did you see?",
-    "whenDidItHappen": "When did it happen?",
-    "additionalDetails": "Additional Details"
+    "submitting": "Submitting...",
+    "selectCategory": "Select a category",
+    "minCharsError": "Description must be at least 10 characters"
   },
 
   "profile": {
@@ -137,52 +157,16 @@
     "language": "Language",
     "country": "Country",
     "signOut": "Sign Out",
-    "credibility": "Credibility Score",
-    "editProfile": "Edit Profile",
-    "notifications": "Notifications",
-    "darkMode": "Dark Mode",
-    "about": "About",
-    "version": "Version {{version}}",
-    "radiusKm": "{{radius}} km"
+    "credibility": "Credibility: {{score}}/100",
+    "missing": "Missing",
+    "lost": "Lost",
+    "found": "Found"
   },
 
   "map": {
-    "mapView": "Map View",
-    "filterByType": "Filter by Type",
-    "allTypes": "All Types",
-    "satellite": "Satellite",
-    "standard": "Standard",
-    "centerOnMe": "Center on My Location"
-  },
-
-  "alertDetail": {
-    "sightings": "Sightings",
-    "reportSighting": "Report Sighting",
-    "lastSeen": "Last Seen",
-    "resolved": "Resolved",
-    "active": "Active",
-    "shareAlert": "Share Alert",
-    "reportedBy": "Reported by {{name}}",
-    "reportedAt": "Reported {{time}}",
-    "sightingCount": "{{count}} sightings"
-  },
-
-  "verification": {
-    "verifyOwnership": "Verify Ownership",
-    "describeItem": "Describe the item to prove it is yours",
-    "verificationQuestion": "Verification Question",
-    "verificationHint": "Answer the question to verify your claim",
-    "verified": "Verified",
-    "pending": "Pending Verification"
-  },
-
-  "resolution": {
-    "markResolved": "Mark as Resolved",
-    "shareStory": "Share Your Story",
-    "reunited": "Reunited!",
-    "itemReturned": "Item Returned",
-    "thankYou": "Thank you for using SafeCircle",
-    "resolvedAt": "Resolved {{time}}"
+    "gettingLocation": "Getting location...",
+    "activeAlerts": "{{count}} active alert(s) nearby",
+    "missingPerson": "Missing person"
   },
 
   "tabs": {
@@ -193,11 +177,22 @@
   },
 
   "time": {
-    "justNow": "Just now",
-    "minutesAgo": "{{count}} min ago",
-    "hoursAgo": "{{count}} h ago",
-    "daysAgo": "{{count}} d ago",
-    "today": "Today",
-    "yesterday": "Yesterday"
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
+  },
+
+  "onboarding": {
+    "welcome": "Welcome to SafeCircle",
+    "welcomeSubtitle": "Community-powered safety for everyone",
+    "chooseLanguage": "Choose your language",
+    "enableLocation": "Enable Location",
+    "enableLocationSubtitle": "We need your location to show nearby alerts and send relevant notifications.",
+    "enableNotifications": "Enable Notifications",
+    "enableNotificationsSubtitle": "Get instant alerts when someone goes missing near you.",
+    "getStarted": "Get Started",
+    "skip": "Skip",
+    "locationEnabled": "Location enabled",
+    "notificationsEnabled": "Notifications enabled"
   }
 }
