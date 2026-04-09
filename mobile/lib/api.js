@@ -212,3 +212,18 @@ export const getTrendingAreas = () => api('/analytics/trending');
 // --- Profile ---
 export const updateProfile = (data) =>
   api('/users/me', { method: 'PATCH', body: JSON.stringify(data) });
+
+// --- Notification history ---
+export const getNotificationHistory = (page = 1) =>
+  api(`/notifications/history?page=${page}&limit=20`);
+export const markNotificationRead = (id) =>
+  api(`/notifications/history/${id}/read`, { method: 'PATCH' });
+export const markAllNotificationsRead = () =>
+  api('/notifications/history/read-all', { method: 'PATCH' });
+
+// --- Lost & Found details ---
+export const getLostItem = (id) => api(`/items/lost/${id}`);
+export const getFoundItem = (id) => api(`/items/found/${id}`);
+export const getLostItemMatches = (id) => api(`/items/lost/${id}/matches`);
+export const claimFoundItem = (itemId, itemType) =>
+  api(`/verification/items/${itemId}/claim`, { method: 'POST', body: JSON.stringify({ item_type: itemType }) });

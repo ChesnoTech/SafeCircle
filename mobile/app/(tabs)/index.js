@@ -3,11 +3,33 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, ActivityIndi
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import * as Location from 'expo-location';
-import { getNearbyAlerts } from '../../lib/api';
+import { getNearbyAlerts, getNotificationHistory, getAnalyticsStats } from '../../lib/api';
 import { useLocationStore, useAlertStore } from '../../lib/store';
 import { joinRegion } from '../../lib/socket';
 import { CONFIG } from '../../lib/config';
 import { t } from '../../lib/i18n';
+
+function StatsBar({ stats }) {
+  if (!stats) return null;
+  const items = [
+    { key: 'missing', value: stats.missing, icon: '\uD83D\uDEA8', color: CONFIG.COLORS.primary },
+    { key: 'lost', value: stats.lost, icon: '\uD83D\uDCE6', color: CONFIG.COLORS.warning },
+    { key: 'found', value: stats.found, icon: '\u2705', color: CONFIG.COLORS.success },
+    { key: 'resolved', value: stats.resolved, icon: '\uD83C\uDF89', color: CONFIG.COLORS.info },
+  ];
+
+  return (
+    <View style={statsStyles.container}>
+      {items.map((s) => (
+        <View key={s.key} style={statsStyles.statCard}>
+          <Text style={statsStyles.statIcon}>{s.icon}</Text>
+          <Text style={[statsStyles.statValue, { color: s.color }]}>{s.value}</Text>
+          <Text style={statsStyles.statLabel}>{t(`analytics.${s.key}`)}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 function AlertCard({ alert, onPress }) {
   const distanceKm = alert.distance_m ? (alert.distance_m / 1000).toFixed(1) : '?';
@@ -73,6 +95,21 @@ export default function HomeScreen() {
     refetchInterval: CONFIG.ALERT_REFRESH_INTERVAL_MS,
   });
 
+  // Notification badge count
+  const { data: notifData } = useQuery({
+    queryKey: ['notifications', 1],
+    queryFn: () => getNotificationHistory(1),
+    refetchInterval: 60000,
+  });
+  const unreadCount = notifData?.unread_count || 0;
+
+  // Platform stats
+  const { data: statsData } = useQuery({
+    queryKey: ['analytics-stats'],
+    queryFn: getAnalyticsStats,
+    staleTime: 300000, // 5 min cache
+  });
+
   useEffect(() => {
     if (data?.alerts) setAlerts(data.alerts);
   }, [data]);
@@ -89,11 +126,25 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('home.activeAlerts')}</Text>
-        <Text style={styles.headerSubtitle}>
-          {t('home.alertsCount', { count: alerts.length, radius: CONFIG.DEFAULT_RADIUS_KM })}
-        </Text>
+        <View style={styles.headerRow}>
+          <View style={styles.headerTextWrap}>
+            <Text style={styles.headerTitle}>{t('home.activeAlerts')}</Text>
+            <Text style={styles.headerSubtitle}>
+              {t('home.alertsCount', { count: alerts.length, radius: CONFIG.DEFAULT_RADIUS_KM })}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.bellButton} onPress={() => router.push('/notifications')}>
+            <Text style={styles.bellIcon}>{'\uD83D\uDD14'}</Text>
+            {unreadCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
+
+      <StatsBar stats={statsData} />
 
       {isLoading && alerts.length === 0 ? (
         <View style={styles.center}>
@@ -144,8 +195,18 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
   header: { backgroundColor: COLORS.primary, padding: 16, paddingTop: 8 },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  headerTextWrap: { flex: 1 },
   headerTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
   headerSubtitle: { color: '#fecaca', fontSize: 14, marginTop: 4 },
+  bellButton: { padding: 8, position: 'relative' },
+  bellIcon: { fontSize: 24 },
+  badge: {
+    position: 'absolute', top: 2, right: 2, backgroundColor: '#fff',
+    borderRadius: 10, minWidth: 18, height: 18, justifyContent: 'center',
+    alignItems: 'center', paddingHorizontal: 4,
+  },
+  badgeText: { color: COLORS.primary, fontSize: 10, fontWeight: 'bold' },
   card: {
     flexDirection: 'row', backgroundColor: COLORS.card, marginHorizontal: 12,
     marginTop: 12, borderRadius: 12, padding: 12, elevation: 2,
@@ -170,4 +231,20 @@ const styles = StyleSheet.create({
   emptyIcon: { fontSize: 48, color: COLORS.success },
   emptyText: { fontSize: 18, fontWeight: 'bold', color: '#333', marginTop: 12 },
   emptySubtext: { fontSize: 14, color: COLORS.textMuted, marginTop: 4 },
+});
+
+const statsStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row', paddingHorizontal: 8, paddingVertical: 8,
+    backgroundColor: COLORS.background,
+  },
+  statCard: {
+    flex: 1, alignItems: 'center', backgroundColor: COLORS.card,
+    marginHorizontal: 4, paddingVertical: 10, borderRadius: 10,
+    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05, shadowRadius: 2,
+  },
+  statIcon: { fontSize: 18 },
+  statValue: { fontSize: 20, fontWeight: 'bold', marginTop: 2 },
+  statLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 2, textTransform: 'uppercase' },
 });

@@ -267,5 +267,70 @@
     "skip": "Skip",
     "locationEnabled": "Location enabled",
     "notificationsEnabled": "Notifications enabled"
+  },
+
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "emptySubtext": "You'll receive alerts when something happens nearby",
+    "markAllRead": "Mark all as read"
+  },
+
+  "matching": {
+    "lost": "Lost",
+    "found": "Found",
+    "color": "Color",
+    "brand": "Brand",
+    "description": "Description",
+    "lostLocation": "Lost Location",
+    "foundLocation": "Found Location",
+    "rewardOffered": "Reward offered",
+    "potentialMatches": "Potential Matches ({{count}})",
+    "noMatches": "No matches found yet",
+    "match": "match",
+    "claimThis": "This is mine"
+  },
+
+  "claim": {
+    "title": "Verify Ownership",
+    "verifyOwnership": "Verify Ownership",
+    "verifyDesc": "Answer a few questions about the item to prove it belongs to you. You need to get at least 2 out of 3 correct.",
+    "startVerification": "Start Verification",
+    "answerQuestions": "Answer {{count}} questions",
+    "question": "Question {{num}}",
+    "yourAnswer": "Your answer...",
+    "submitAnswers": "Submit Answers",
+    "verified": "Ownership Verified!",
+    "notVerified": "Verification Failed"
+  },
+
+  "sharing": {
+    "share": "Share",
+    "missingPerson": "Missing: {{name}}",
+    "urgentAlert": "URGENT",
+    "lastSeen": "Last seen",
+    "helpFind": "Help us find them! Open in SafeCircle:",
+    "poweredBy": "SafeCircle - Community Safety",
+    "lostItem": "Lost Item",
+    "foundItem": "Found Item",
+    "foundAt": "Found at"
+  },
+
+  "analytics": {
+    "missing": "Missing",
+    "lost": "Lost",
+    "found": "Found",
+    "resolved": "Resolved",
+    "heatmap": "Heatmap",
+    "trending": "Trending",
+    "trendingAreas": "Trending Areas",
+    "trendingDesc": "Areas with most reports in the last 7 days",
+    "gridArea": "Area {{lat}}, {{lng}}",
+    "reportsCount": "{{count}} reports",
+    "latestReport": "Latest",
+    "highActivity": "High",
+    "mediumActivity": "Medium",
+    "lowActivity": "Low",
+    "noTrending": "No trending areas right now"
   }
 }
