@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { login, register, setTokens } from '../lib/api';
 import { useAuthStore } from '../lib/store';
 import { CONFIG } from '../lib/config';
+import { t } from '../lib/i18n';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -29,9 +30,9 @@ export default function LoginScreen() {
     } catch (err) {
       const msg = err.message || '';
       if (msg === 'Network request failed') {
-        setError('No internet connection. Please check your network.');
+        setError(t('auth.noInternet'));
       } else {
-        setError(msg || 'Something went wrong');
+        setError(msg || t('auth.genericError'));
       }
     } finally {
       setLoading(false);
@@ -46,14 +47,14 @@ export default function LoginScreen() {
       <View style={styles.header}>
         <Text style={styles.logo}>🛡️</Text>
         <Text style={styles.title}>SafeCircle</Text>
-        <Text style={styles.subtitle}>Community-powered safety</Text>
+        <Text style={styles.subtitle}>{t('auth.welcomeSubtitle')}</Text>
       </View>
 
       <View style={styles.form}>
         {isRegister && (
           <TextInput
             style={styles.input}
-            placeholder="Full name"
+            placeholder={t('auth.fullName')}
             value={name}
             onChangeText={setName}
             autoCapitalize="words"
@@ -61,7 +62,7 @@ export default function LoginScreen() {
         )}
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder={t('auth.email')}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -69,7 +70,7 @@ export default function LoginScreen() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder={t('auth.password')}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -86,7 +87,7 @@ export default function LoginScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.buttonText}>
-              {isRegister ? 'Create Account' : 'Sign In'}
+              {isRegister ? t('auth.createAccount') : t('auth.signIn')}
             </Text>
           )}
         </TouchableOpacity>
@@ -96,7 +97,7 @@ export default function LoginScreen() {
           onPress={() => { setIsRegister(!isRegister); setError(''); }}
         >
           <Text style={styles.switchText}>
-            {isRegister ? 'Already have an account? Sign In' : "Don't have an account? Register"}
+            {isRegister ? t('auth.haveAccount') : t('auth.noAccount')}
           </Text>
         </TouchableOpacity>
       </View>

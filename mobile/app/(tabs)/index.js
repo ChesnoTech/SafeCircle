@@ -7,6 +7,7 @@ import { getNearbyAlerts } from '../../lib/api';
 import { useLocationStore, useAlertStore } from '../../lib/store';
 import { joinRegion } from '../../lib/socket';
 import { CONFIG } from '../../lib/config';
+import { t } from '../../lib/i18n';
 
 function AlertCard({ alert, onPress }) {
   const distanceKm = alert.distance_m ? (alert.distance_m / 1000).toFixed(1) : '?';
@@ -20,14 +21,14 @@ function AlertCard({ alert, onPress }) {
       />
       <View style={styles.cardContent}>
         <Text style={styles.cardName}>{alert.name}</Text>
-        {alert.age && <Text style={styles.cardDetail}>Age: {alert.age}</Text>}
+        {alert.age && <Text style={styles.cardDetail}>{t('home.age', { age: alert.age })}</Text>}
         {alert.clothing_description && (
           <Text style={styles.cardDetail} numberOfLines={1}>
             {alert.clothing_description}
           </Text>
         )}
         <Text style={styles.cardMeta}>
-          {distanceKm} km away · {timeAgo} · {alert.sighting_count || 0} sightings
+          {t('home.kmAway', { distance: distanceKm })} · {timeAgo} · {t('home.sightings', { count: alert.sighting_count || 0 })}
         </Text>
       </View>
     </TouchableOpacity>
@@ -37,10 +38,10 @@ function AlertCard({ alert, onPress }) {
 function getTimeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 60) return t('time.minutesAgo', { count: mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return t('time.hoursAgo', { count: hours });
+  return t('time.daysAgo', { count: Math.floor(hours / 24) });
 }
 
 export default function HomeScreen() {
@@ -80,7 +81,7 @@ export default function HomeScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={CONFIG.COLORS.primary} />
-        <Text style={styles.loading}>Getting your location...</Text>
+        <Text style={styles.loading}>{t('home.gettingLocation')}</Text>
       </View>
     );
   }
@@ -88,27 +89,27 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Active Alerts Near You</Text>
+        <Text style={styles.headerTitle}>{t('home.activeAlerts')}</Text>
         <Text style={styles.headerSubtitle}>
-          {alerts.length} alerts within {CONFIG.DEFAULT_RADIUS_KM} km
+          {t('home.alertsCount', { count: alerts.length, radius: CONFIG.DEFAULT_RADIUS_KM })}
         </Text>
       </View>
 
       {isLoading && alerts.length === 0 ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={CONFIG.COLORS.primary} />
-          <Text style={styles.loading}>Loading alerts...</Text>
+          <Text style={styles.loading}>{t('home.loadingAlerts')}</Text>
         </View>
       ) : error ? (
         <View style={styles.center}>
           <Text style={styles.errorIcon}>!</Text>
           <Text style={styles.error}>
             {error.message === 'Network request failed'
-              ? 'No internet connection'
-              : 'Failed to load alerts'}
+              ? t('home.noInternet')
+              : t('home.failedToLoad')}
           </Text>
           <TouchableOpacity style={styles.retryButton} onPress={refetch}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('common.retry')}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -124,8 +125,8 @@ export default function HomeScreen() {
           ListEmptyComponent={
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>✓</Text>
-              <Text style={styles.emptyText}>No active alerts nearby</Text>
-              <Text style={styles.emptySubtext}>Your area is safe right now</Text>
+              <Text style={styles.emptyText}>{t('home.noActiveAlerts')}</Text>
+              <Text style={styles.emptySubtext}>{t('home.areaSafe')}</Text>
             </View>
           }
           refreshing={isLoading}

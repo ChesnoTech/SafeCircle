@@ -1,113 +1,159 @@
 # SafeCircle
 
-Community-powered safety platform. Instant alerts. Zero delay.
-
-## The Problem
-
-People use Facebook to find lost children, lost wallets, missing persons. But social media posts get buried in hours. No geographic targeting. No permanence. No instant alerts.
-Social media is not designed for safety.
+International community-powered safety platform. Missing persons, lost & found, anonymous intel. Instant alerts. Zero delay.
 
 ## What SafeCircle Does
 
-### :rotating_light: Missing Person Instant Alert
+### Missing Person Instant Alert
+Report a missing person with photo + name. Push notification goes to every SafeCircle user within the geographic radius - INSTANTLY. 2-phase flow: Phase 1 sends alert in <15s, Phase 2 adds details.
 
-Mother loses child in a shopping mall. She reports through the app.
-Push notification WITH PHOTO goes to every SafeCircle user within the geographic radius — INSTANTLY. Parking areas, surrounding streets, exits. Thousands of eyes activated in seconds.
+### Lost & Found with Smart Matching
+Structured lost/found reports with category, color, brand. PostgreSQL scoring function automatically matches found items to lost reports. Verification quiz proves ownership.
 
-### :package: Lost & Found
+### Community Intelligence
+Anonymous reports of suspicious behavior. Pattern aggregation across time and geography helps detect threats early.
 
-Permanent, searchable database with geographic targeting.
-Lost wallet? Lost phone? Lost documents? Posts never get buried.
-Geographic radius matching — found items near where you lost them.
+### Resolution Stories
+When cases resolve, users can share their reunification story. Public feed of success stories builds community trust.
 
-### :mag: Community Intelligence
+## Tech Stack - 100% Free, Self-Hosted
 
-Anonymous reports of suspicious behavior. Not accusations — intelligence. 50 people report aggressive behavior from the same person → automatic flag for authorities. Pattern aggregation across time and geography.
+> Compliant with data localization laws. No vendor lock-in. No cloud dependencies.
 
-### :bar_chart: Behavioral Analysis
+| Layer | Technology |
+|-------|-----------|
+| Mobile | React Native / Expo (iOS + Android) |
+| Backend | Node.js + Fastify |
+| Database | PostgreSQL 16 + PostGIS 3 |
+| Cache & Queues | Valkey (Redis) + BullMQ |
+| File Storage | MinIO (S3-compatible) |
+| Realtime | Socket.IO |
+| Push Notifications | Firebase Cloud Messaging (HTTP v1) |
+| i18n | Custom engine with EN/AR/RU (7 languages planned) |
+| Reverse Proxy | Caddy (auto-SSL) |
+| Deployment | Docker Compose |
 
-Historical pattern matching with solved cases. Speeds up investigation by narrowing suspect pools. Not used for accusations — used to accelerate justice.
+## Features
 
-### :trophy: Reward Program
+### Completed (Sprint 1-3)
 
-Citizens who provide information that helps solve cases or find missing persons receive recognition and rewards.
+- **Real-time alerts** - Socket.IO region-based rooms, geographic grid cells
+- **Config-driven architecture** - zero hardcoded values, all env vars
+- **Input validation** - JSON Schema on all endpoints
+- **International platform** - 14 target countries, 7 languages
+- **2-phase missing reports** - photo-first for instant alerts, details later
+- **Structured L&F matching** - color/brand/category scoring in PostgreSQL
+- **Push notification infrastructure** - BullMQ queue, FCM HTTP v1, urgency tiers
+- **Verification quiz** - ownership proof with fuzzy matching (2/3 to pass)
+- **Resolution & stories** - reunited/returned flow with public celebration feed
+- **User roles** - citizen/moderator/officer/authority/admin
+- **Full i18n** - English, Arabic (Egyptian dialect), Russian across all screens
+- **RTL support** - Arabic layout mirroring
+- **Language selector** - in-app language picker with 7 options
+- **Onboarding flow** - language, location, notification permissions
 
-## How It's Different
+### Planned
 
-| Feature | Facebook | Citizen App | SafeCircle |
-|---------|----------|-------------|------------|
-| Missing child instant alert | :x: | Limited | :white_check_mark: Geographic push with photo |
-| Lost & found database | :x: Posts buried | :x: | :white_check_mark: Permanent, searchable |
-| Community intelligence | :x: | :x: | :white_check_mark: Anonymous pattern aggregation |
-| Works in developing countries | :white_check_mark: | :x: US only | :white_check_mark: Designed for global use |
-| Behavioral analysis | :x: | :x: | :white_check_mark: Historical patterns |
+- Map clustering for dense alert areas
+- Offline caching and draft reports
+- Moderation tools
+- Email verification
+- In-app messaging between finder/reporter
+- Web dashboard for law enforcement
+- Credibility scoring system
 
-## Market
+## Project Structure
 
-- Citizen App (US only): $400M+ valuation
-- Amber Alert: government-only, slow
-- No platform combines all these layers globally
+```
+SafeCircle/
+├── backend/
+│   ├── src/
+│   │   ├── config/         # Environment-driven configuration
+│   │   ├── plugins/        # Fastify plugins (db, auth, redis, storage, queue)
+│   │   ├── routes/         # API endpoints
+│   │   ├── utils/          # Helpers (geo, notifications)
+│   │   └── workers/        # BullMQ workers (alert-sender)
+│   └── migrations/         # SQL migrations
+├── mobile/
+│   ├── app/                # Expo Router screens
+│   │   ├── (tabs)/         # Tab navigation (home, map, report, profile)
+│   │   ├── report/         # Report screens (missing, lost, found, suspicious)
+│   │   └── alert/          # Alert detail
+│   ├── lib/                # Shared utilities (api, config, i18n, socket, store)
+│   └── locales/            # Translation files (en, ar, ru)
+├── docker-compose.yml
+└── docs/                   # Design docs, competitor research
+```
 
-## Tech Stack (Planned) — 100% Free, Open-Source, Self-Hosted
+## Quick Start
 
-> Compliant with Russian data localization law (242-ФЗ). No vendor lock-in.
+### Prerequisites
+- Docker & Docker Compose
+- Node.js 18+
+- Expo CLI (`npm install -g expo-cli`)
 
-| Layer | Technology | License |
-|-------|-----------|---------|
-| Mobile | React Native / Expo | MIT |
-| Backend | Node.js + Fastify | MIT |
-| Database | PostgreSQL 16 + PostGIS 3 | Free |
-| Cache & Queues | Redis / Valkey + BullMQ | BSD-3 |
-| File Storage | MinIO (S3-compatible) | AGPL-3 |
-| Realtime | Socket.IO | MIT |
-| Auth | Passport.js + JWT + bcrypt | MIT |
-| Push Notifications | Firebase Cloud Messaging | Free (unlimited) |
-| Reverse Proxy | Caddy (auto-SSL) | Apache-2 |
-| Maps | OpenStreetMap + Leaflet | ODbL / BSD-2 |
-| CI/CD | GitHub Actions | Free (public repo) |
-| Monitoring | Prometheus + Grafana | Apache-2 |
-| Deployment | Docker Compose | Apache-2 |
+### Backend
+```bash
+# Start infrastructure (PostgreSQL, Redis, MinIO, Caddy)
+docker-compose up -d
 
-> **Dev cost: $0** (runs locally). **Production: ~500 ₽/мес (~$5)** for a Russian VPS.
-> All software is free forever — you only pay for server hardware.
+# Run migrations
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/001_initial.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/002_verification_resolution.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/003_device_tokens_and_roles.sql
 
-## Documentation
+# Start API
+cd backend && npm install && npm run dev
+```
 
-| Document | Description |
-|----------|-------------|
-| [Feature Specification](docs/CONCEPT.md) | Detailed feature spec for all modules (EN/RU) |
-| [System Architecture](docs/ARCHITECTURE.md) | Technical architecture overview (EN/RU) |
-| [User Scenarios](docs/SCENARIOS.md) | 4 detailed user scenarios (EN/RU) |
-| [Data Model](docs/DATA-MODEL.md) | Complete data model — 200+ fields extracted from 2019 brainstorming (EN/RU) |
-| [Localization Guide](docs/LOCALIZATION.md) | Country adaptation guide — Egypt & Russia profiles, expansion checklist (EN/RU) |
+### Mobile
+```bash
+cd mobile && npm install && npx expo start
+```
 
-### Reference Data (Egypt — first country profile)
+## API Endpoints
 
-| Dataset | Records | Source |
-|---------|---------|--------|
-| [Administrative Divisions](data/reference/egypt/administrative-divisions.json) | 27 governorates, 47+ districts | CAPMAS 2014 |
-| [Governorates (Bilingual)](data/reference/egypt/governorates-bilingual.json) | 27 entries (AR/EN) | CAPMAS 2014 |
-| [Neighborhoods](data/reference/egypt/neighborhoods.json) | 157 areas (Alexandria) | Brainstorming 2019 |
-| [Vehicle Registration](data/reference/egypt/vehicles.json) | 27 license types, 158 traffic units | Brainstorming 2019 |
-| [Education System](data/reference/egypt/education.json) | 9 levels, 16 job categories | Brainstorming 2019 |
-| [Driver's Licenses](data/reference/egypt/driver-licenses.json) | 12 types | Brainstorming 2019 |
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | /api/auth/register | Register user |
+| POST | /api/auth/login | Login |
+| POST | /api/reports/missing | Report missing person |
+| GET | /api/reports/missing/nearby | Get nearby alerts |
+| PATCH | /api/reports/missing/:id | Update report (2-phase) |
+| POST | /api/items/lost | Report lost item |
+| POST | /api/items/found | Report found item (auto-match) |
+| POST | /api/intel | Submit anonymous intel |
+| POST | /api/sightings | Report sighting |
+| PUT | /api/notifications/token | Register FCM token |
+| PUT | /api/notifications/preferences | Update notification prefs |
+| POST | /api/verification/items/:id/claim | Start ownership claim |
+| POST | /api/verification/claims/:id/verify | Submit verification answers |
+| POST | /api/reports/:id/resolve | Mark resolved + share story |
+| GET | /api/stories | Public success stories feed |
+| GET | /api/health | Health check |
 
-## Status
+## Internationalization
 
-- [x] Concept design
-- [x] Feature specification
-- [x] Data model (extracted from 2019 brainstorming, modernized)
-- [x] Country profile: Egypt (reference implementation)
-- [x] Country profile: Russia (documented)
-- [ ] Prototype
-- [ ] MVP
-- [ ] Beta testing
+The app supports 7 languages with full RTL support:
+
+| Code | Language | Status |
+|------|----------|--------|
+| en | English | Complete |
+| ar | Arabic (Egyptian dialect) | Complete |
+| ru | Russian | Complete |
+| es | Spanish | Planned |
+| fr | French | Planned |
+| tr | Turkish | Planned |
+| pt | Portuguese | Planned |
+
+## Target Countries
+
+Egypt, Russia, Saudi Arabia, UAE, India, Turkey, Mexico, Brazil, Nigeria, Kenya, Philippines, Morocco, Tunisia, Pakistan
 
 ## Author
 
-[Ayoub Mohamed Samir](https://chesnotech.github.io) — Moscow, Russia
-Conceived 2019
+[Ayoub Mohamed Samir](https://chesnotech.github.io) - SafeCircle creator since 2019
 
 ## License
 
-All rights reserved. Concept documentation only.
+All rights reserved.

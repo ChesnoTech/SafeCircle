@@ -73,7 +73,19 @@ export async function reportRoutes(fastify) {
       fastify.io.to(`region:${cell}`).emit('new_alert', alertPayload);
     }
 
-    // TODO: Queue FCM push notification job via BullMQ
+    // Queue FCM push notification job via BullMQ
+    if (fastify.alertQueue) {
+      await fastify.alertQueue.add('send-alert', {
+        reportId: report.id,
+        name: report.name,
+        age: report.age,
+        photo_url: report.photo_url,
+        latitude,
+        longitude,
+        alert_radius_km,
+        created_at: report.created_at,
+      });
+    }
 
     reply.code(201);
     return report;

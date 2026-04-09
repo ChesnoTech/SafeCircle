@@ -8,6 +8,7 @@ import { dbPlugin } from './plugins/db.js';
 import { authPlugin } from './plugins/auth.js';
 import { redisPlugin } from './plugins/redis.js';
 import { storagePlugin } from './plugins/storage.js';
+import { queuePlugin } from './plugins/queue.js';
 import { authRoutes } from './routes/auth.js';
 import { reportRoutes } from './routes/reports.js';
 import { sightingRoutes } from './routes/sightings.js';
@@ -35,6 +36,7 @@ await app.register(dbPlugin);
 await app.register(redisPlugin);
 await app.register(authPlugin);
 await app.register(storagePlugin);
+await app.register(queuePlugin);
 
 // --- Routes ---
 await app.register(authRoutes, { prefix: '/api/auth' });

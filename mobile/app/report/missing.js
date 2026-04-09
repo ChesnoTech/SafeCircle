@@ -5,8 +5,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { createMissingReport, uploadPhoto, api } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
+import { t } from '../../lib/i18n';
 
-const PHASE_1_FIELDS = ['name', 'photo'];
 const GENDERS = ['male', 'female', 'other', 'unknown'];
 
 export default function MissingReportScreen() {
@@ -41,7 +41,7 @@ export default function MissingReportScreen() {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      setError('Camera permission is required');
+      setError(t('missing.cameraPermission'));
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -52,10 +52,9 @@ export default function MissingReportScreen() {
     }
   };
 
-  // Phase 1: Photo + Name + Location → instant alert
   const handlePhase1Submit = async () => {
-    if (!photo) return setError('Photo is required for immediate alert');
-    if (!form.name.trim()) return setError('Name is required');
+    if (!photo) return setError(t('missing.photoRequired'));
+    if (!form.name.trim()) return setError(t('missing.nameRequired'));
     setError('');
     setLoading(true);
     try {
@@ -72,8 +71,8 @@ export default function MissingReportScreen() {
       setReportId(report.id);
       setPhase(2);
       Alert.alert(
-        'Alert Sent!',
-        `Nearby users have been alerted in ${elapsed}s. Add more details below to help the search.`,
+        t('missing.alertSentTitle'),
+        t('missing.alertSentMessage', { seconds: elapsed }),
       );
     } catch (err) {
       setError(err.message);
@@ -82,7 +81,6 @@ export default function MissingReportScreen() {
     }
   };
 
-  // Phase 2: Add remaining details to existing report
   const handlePhase2Submit = async () => {
     setError('');
     setLoading(true);
@@ -108,7 +106,7 @@ export default function MissingReportScreen() {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.urgentBanner}>
-          <Text style={styles.urgentText}>Quick alert — photo + name sends an instant alert</Text>
+          <Text style={styles.urgentText}>{t('missing.quickAlertBanner')}</Text>
         </View>
 
         <TouchableOpacity style={styles.photoPicker} onPress={takePhoto}>
@@ -117,36 +115,36 @@ export default function MissingReportScreen() {
           ) : (
             <View style={styles.photoPlaceholder}>
               <Text style={styles.photoIcon}>📸</Text>
-              <Text style={styles.photoText}>Take Photo</Text>
+              <Text style={styles.photoText}>{t('missing.takePhoto')}</Text>
             </View>
           )}
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.galleryLink} onPress={pickImage}>
           <Text style={styles.galleryLinkText}>
-            {photo ? 'Choose different photo' : 'Or choose from gallery'}
+            {photo ? t('missing.chooseDifferent') : t('missing.chooseFromGallery')}
           </Text>
         </TouchableOpacity>
 
-        <Text style={styles.label}>Name *</Text>
+        <Text style={styles.label}>{t('missing.nameLabel')}</Text>
         <TextInput
           style={styles.input}
-          placeholder="Full name of missing person"
+          placeholder={t('missing.namePlaceholder')}
           value={form.name}
           onChangeText={(v) => setForm({ ...form, name: v })}
           autoFocus
         />
 
-        <Text style={styles.label}>Age (helps prioritize alert)</Text>
+        <Text style={styles.label}>{t('missing.ageLabel')}</Text>
         <TextInput
           style={styles.input}
-          placeholder="Approximate age"
+          placeholder={t('missing.agePlaceholder')}
           value={form.age}
           onChangeText={(v) => setForm({ ...form, age: v })}
           keyboardType="numeric"
         />
 
-        <Text style={styles.label}>Alert Radius (km)</Text>
+        <Text style={styles.label}>{t('missing.alertRadius')}</Text>
         <TextInput
           style={styles.input}
           value={form.alert_radius_km}
@@ -164,7 +162,7 @@ export default function MissingReportScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.submitText}>Send Alert Now</Text>
+            <Text style={styles.submitText}>{t('missing.sendAlertNow')}</Text>
           )}
         </TouchableOpacity>
 
@@ -178,10 +176,10 @@ export default function MissingReportScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.sentBanner}>
         <Text style={styles.sentIcon}>✓</Text>
-        <Text style={styles.sentText}>Alert is live — add details to help the search</Text>
+        <Text style={styles.sentText}>{t('missing.alertLive')}</Text>
       </View>
 
-      <Text style={styles.label}>Gender</Text>
+      <Text style={styles.label}>{t('missing.gender')}</Text>
       <View style={styles.genderRow}>
         {GENDERS.map((g) => (
           <TouchableOpacity
@@ -190,34 +188,34 @@ export default function MissingReportScreen() {
             onPress={() => setForm({ ...form, gender: g })}
           >
             <Text style={[styles.genderText, form.gender === g && styles.genderTextActive]}>
-              {g}
+              {t(`missing.${g}`)}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <Text style={styles.label}>Clothing Description</Text>
+      <Text style={styles.label}>{t('missing.clothingDescription')}</Text>
       <TextInput
         style={[styles.input, styles.multiline]}
-        placeholder="What were they wearing?"
+        placeholder={t('missing.whatWearing')}
         value={form.clothing_description}
         onChangeText={(v) => setForm({ ...form, clothing_description: v })}
         multiline
         numberOfLines={3}
       />
 
-      <Text style={styles.label}>Last Seen Location</Text>
+      <Text style={styles.label}>{t('missing.lastSeenLocation')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Address or landmark"
+        placeholder={t('missing.addressOrLandmark')}
         value={form.last_seen_address}
         onChangeText={(v) => setForm({ ...form, last_seen_address: v })}
       />
 
-      <Text style={styles.label}>Circumstances</Text>
+      <Text style={styles.label}>{t('missing.circumstances')}</Text>
       <TextInput
         style={[styles.input, styles.multiline]}
-        placeholder="Any additional details that could help"
+        placeholder={t('missing.anyDetails')}
         value={form.circumstances}
         onChangeText={(v) => setForm({ ...form, circumstances: v })}
         multiline
@@ -231,7 +229,7 @@ export default function MissingReportScreen() {
           style={styles.skipButton}
           onPress={() => router.back()}
         >
-          <Text style={styles.skipText}>Skip for now</Text>
+          <Text style={styles.skipText}>{t('missing.skipForNow')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -242,7 +240,7 @@ export default function MissingReportScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.submitText}>Update Report</Text>
+            <Text style={styles.submitText}>{t('missing.updateReport')}</Text>
           )}
         </TouchableOpacity>
       </View>

@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { submitIntelReport, uploadPhoto } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
+import { t } from '../../lib/i18n';
 
 const categories = [
   'suspicious_vehicle', 'suspicious_person', 'attempted_luring',
@@ -32,8 +33,8 @@ export default function SuspiciousReportScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!form.category) return setError('Select a category');
-    if (form.description.length < 10) return setError('Description must be at least 10 characters');
+    if (!form.category) return setError(t('intel.selectCategory'));
+    if (form.description.length < 10) return setError(t('intel.minCharsError'));
     setError('');
     setLoading(true);
     try {
@@ -59,7 +60,7 @@ export default function SuspiciousReportScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.anonBanner}>
-        <Text style={styles.anonText}>This report is completely anonymous</Text>
+        <Text style={styles.anonText}>{t('intel.anonymousBanner')}</Text>
       </View>
 
       <TouchableOpacity style={styles.photoPicker} onPress={pickImage}>
@@ -68,12 +69,12 @@ export default function SuspiciousReportScreen() {
         ) : (
           <View style={styles.photoPlaceholder}>
             <Text style={styles.photoIcon}>+</Text>
-            <Text style={styles.photoText}>Add Photo (optional)</Text>
+            <Text style={styles.photoText}>{t('lostFound.addPhotoOptional')}</Text>
           </View>
         )}
       </TouchableOpacity>
 
-      <Text style={styles.label}>Category *</Text>
+      <Text style={styles.label}>{t('intel.category')}</Text>
       <View style={styles.categoryGrid}>
         {categories.map((cat) => (
           <TouchableOpacity
@@ -88,25 +89,25 @@ export default function SuspiciousReportScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Description * (min 10 chars)</Text>
+      <Text style={styles.label}>{t('intel.descriptionLabel')}</Text>
       <TextInput
         style={[styles.input, styles.multiline]}
-        placeholder="Describe what you observed"
+        placeholder={t('intel.describeObservation')}
         value={form.description}
         onChangeText={(v) => setForm({ ...form, description: v })}
         multiline
         numberOfLines={4}
       />
 
-      <Text style={styles.label}>Location</Text>
+      <Text style={styles.label}>{t('intel.location')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Address or landmark (optional)"
+        placeholder={t('intel.addressOptional')}
         value={form.address}
         onChangeText={(v) => setForm({ ...form, address: v })}
       />
 
-      <Text style={styles.label}>Severity</Text>
+      <Text style={styles.label}>{t('intel.severity')}</Text>
       <View style={styles.severityRow}>
         {severities.map((s) => (
           <TouchableOpacity
@@ -115,7 +116,7 @@ export default function SuspiciousReportScreen() {
             onPress={() => setForm({ ...form, severity: s })}
           >
             <Text style={[styles.severityText, form.severity === s && styles.severityTextActive]}>
-              {s}
+              {t(`intel.${s}`)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -129,7 +130,7 @@ export default function SuspiciousReportScreen() {
         disabled={loading}
       >
         <Text style={styles.submitText}>
-          {loading ? 'Submitting...' : 'Submit Report'}
+          {loading ? t('intel.submitting') : t('intel.submitReport')}
         </Text>
       </TouchableOpacity>
 

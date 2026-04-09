@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { Text, I18nManager } from 'react-native';
 import { CONFIG } from '../../lib/config';
+import { t, isRTL } from '../../lib/i18n';
 
 const TAB_ICONS = { Home: '🏠', Map: '🗺️', Report: '🚨', Profile: '👤' };
 
@@ -9,6 +10,13 @@ function TabIcon({ name, focused }) {
 }
 
 export default function TabLayout() {
+  // Sync React Native RTL with i18n
+  const rtl = isRTL();
+  if (I18nManager.isRTL !== rtl) {
+    I18nManager.allowRTL(rtl);
+    I18nManager.forceRTL(rtl);
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -21,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('tabs.home'),
           tabBarIcon: ({ focused }) => <TabIcon name="Home" focused={focused} />,
           headerTitle: 'SafeCircle',
         }}
@@ -29,21 +37,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="map"
         options={{
-          title: 'Map',
+          title: t('tabs.map'),
           tabBarIcon: ({ focused }) => <TabIcon name="Map" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="report"
         options={{
-          title: 'Report',
+          title: t('tabs.report'),
           tabBarIcon: ({ focused }) => <TabIcon name="Report" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('tabs.profile'),
           tabBarIcon: ({ focused }) => <TabIcon name="Profile" focused={focused} />,
         }}
       />
