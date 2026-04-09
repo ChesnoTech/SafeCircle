@@ -83,6 +83,8 @@ export default function RootLayout() {
         <Stack.Screen name="item/[id]" options={{ title: t('common.loading') }} />
         <Stack.Screen name="claim/[id]" options={{ title: t('claim.title') }} />
         <Stack.Screen name="trending" options={{ title: t('analytics.trending') }} />
+        <Stack.Screen name="stories" options={{ title: t('resolution.storiesTitle') }} />
+        <Stack.Screen name="items" options={{ title: t('matching.browseItems') }} />
         <Stack.Screen name="messages/index" options={{ title: t('messaging.conversations') }} />
         <Stack.Screen name="messages/[id]" options={{ title: t('messaging.conversations') }} />
       </Stack>

@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, FlatList, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, FlatList, Image, Alert, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
-import { getProfile, getMyReports, updateProfile, uploadPhoto } from '../../lib/api';
+import { getProfile, getMyReports, updateProfile, uploadPhoto, getNotificationPrefs, updateNotificationPrefs } from '../../lib/api';
 import { useAuthStore } from '../../lib/store';
 import { clearTokens } from '../../lib/api';
 import { CONFIG } from '../../lib/config';
@@ -18,6 +18,7 @@ export default function ProfileScreen() {
   const [currentLang, setCurrentLang] = useState(getLanguage());
   const [editForm, setEditForm] = useState({ name: '', phone: '' });
   const [saving, setSaving] = useState(false);
+  const [notifModalVisible, setNotifModalVisible] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -30,6 +31,21 @@ export default function ProfileScreen() {
     queryFn: getMyReports,
     enabled: isAuthenticated,
   });
+
+  const { data: notifPrefs } = useQuery({
+    queryKey: ['notifPrefs'],
+    queryFn: getNotificationPrefs,
+    enabled: isAuthenticated,
+  });
+
+  const notifMutation = useMutation({
+    mutationFn: (prefs) => updateNotificationPrefs(prefs),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifPrefs'] }),
+  });
+
+  const toggleNotifPref = (key, value) => {
+    notifMutation.mutate({ [key]: value });
+  };
 
   const handleLanguageChange = useCallback(async (code) => {
     await setLanguage(code);
@@ -139,7 +155,15 @@ export default function ProfileScreen() {
         <TouchableOpacity onPress={() => router.push('/search')}>
           <MenuItem label={t('search.title')} value={'>'} />
         </TouchableOpacity>
-        <MenuItem label={t('profile.notificationRadius')} value={`${profile?.notification_radius_km || 10} km`} />
+        <TouchableOpacity onPress={() => router.push('/stories')}>
+          <MenuItem label={t('resolution.storiesTitle')} value={'>'} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/items')}>
+          <MenuItem label={t('matching.browseItems')} value={'>'} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setNotifModalVisible(true)}>
+          <MenuItem label={t('profile.notificationPrefs')} value={`${notifPrefs?.radiusKm || 10} km`} />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => setLangModalVisible(true)}>
           <MenuItem label={t('profile.language')} value={langLabel} />
         </TouchableOpacity>
@@ -177,6 +201,85 @@ export default function ProfileScreen() {
             />
             <TouchableOpacity style={styles.modalClose} onPress={() => setLangModalVisible(false)}>
               <Text style={styles.modalCloseText}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Notification Preferences Modal */}
+      <Modal
+        visible={notifModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setNotifModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{t('profile.notificationPrefs')}</Text>
+
+            <View style={styles.prefRow}>
+              <Text style={styles.prefLabel}>{t('notifPrefs.missingPersons')}</Text>
+              <Switch
+                value={notifPrefs?.missingPersons !== false}
+                onValueChange={(v) => toggleNotifPref('missingPersons', v)}
+                trackColor={{ true: CONFIG.COLORS.primary }}
+              />
+            </View>
+            <View style={styles.prefRow}>
+              <Text style={styles.prefLabel}>{t('notifPrefs.lostFound')}</Text>
+              <Switch
+                value={notifPrefs?.lostFound !== false}
+                onValueChange={(v) => toggleNotifPref('lostFound', v)}
+                trackColor={{ true: CONFIG.COLORS.primary }}
+              />
+            </View>
+            <View style={styles.prefRow}>
+              <Text style={styles.prefLabel}>{t('notifPrefs.intel')}</Text>
+              <Switch
+                value={notifPrefs?.intel !== false}
+                onValueChange={(v) => toggleNotifPref('intel', v)}
+                trackColor={{ true: CONFIG.COLORS.primary }}
+              />
+            </View>
+
+            <Text style={styles.editLabel}>{t('notifPrefs.radius')}</Text>
+            <View style={styles.radiusRow}>
+              {[5, 10, 25, 50].map((km) => (
+                <TouchableOpacity
+                  key={km}
+                  style={[styles.radiusBtn, (notifPrefs?.radiusKm || 10) === km && styles.radiusBtnActive]}
+                  onPress={() => toggleNotifPref('radiusKm', km)}
+                >
+                  <Text style={[styles.radiusBtnText, (notifPrefs?.radiusKm || 10) === km && styles.radiusBtnTextActive]}>
+                    {km} km
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.editLabel}>{t('notifPrefs.quietHours')}</Text>
+            <View style={styles.quietRow}>
+              <TextInput
+                style={styles.quietInput}
+                placeholder="22:00"
+                value={notifPrefs?.quietHoursStart || ''}
+                onChangeText={(v) => toggleNotifPref('quietHoursStart', v)}
+                keyboardType="default"
+                maxLength={5}
+              />
+              <Text style={styles.quietDash}>{'\u2014'}</Text>
+              <TextInput
+                style={styles.quietInput}
+                placeholder="07:00"
+                value={notifPrefs?.quietHoursEnd || ''}
+                onChangeText={(v) => toggleNotifPref('quietHoursEnd', v)}
+                keyboardType="default"
+                maxLength={5}
+              />
+            </View>
+
+            <TouchableOpacity style={styles.modalClose} onPress={() => setNotifModalVisible(false)}>
+              <Text style={styles.modalCloseText}>{t('common.done')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -315,4 +418,24 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginTop: 16,
   },
   saveButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  // Notification prefs
+  prefRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+  },
+  prefLabel: { fontSize: 16, color: '#333' },
+  radiusRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
+  radiusBtn: {
+    flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#f5f5f5',
+    alignItems: 'center', borderWidth: 1, borderColor: '#e0e0e0',
+  },
+  radiusBtnActive: { backgroundColor: CONFIG.COLORS.primary, borderColor: CONFIG.COLORS.primary },
+  radiusBtnText: { fontSize: 14, color: '#333' },
+  radiusBtnTextActive: { color: '#fff', fontWeight: 'bold' },
+  quietRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
+  quietInput: {
+    flex: 1, backgroundColor: '#f9f9f9', borderRadius: 10, padding: 12,
+    fontSize: 16, borderWidth: 1, borderColor: '#e0e0e0', textAlign: 'center',
+  },
+  quietDash: { fontSize: 18, color: '#888' },
 });

@@ -163,7 +163,8 @@
     "found": "Found",
     "changePhoto": "Change Photo",
     "editProfile": "Edit Profile",
-    "phone": "Phone"
+    "phone": "Phone",
+    "notificationPrefs": "Notification Preferences"
   },
 
   "map": {
@@ -288,7 +289,11 @@
     "potentialMatches": "Potential Matches ({{count}})",
     "noMatches": "No matches found yet",
     "match": "match",
-    "claimThis": "This is mine"
+    "claimThis": "This is mine",
+    "browseItems": "Lost & Found",
+    "nearbyItems": "Items within {{radius}} km",
+    "noLostItems": "No lost items nearby",
+    "noFoundItems": "No found items nearby"
   },
 
   "claim": {
@@ -332,5 +337,35 @@
     "mediumActivity": "Medium",
     "lowActivity": "Low",
     "noTrending": "No trending areas right now"
+  },
+
+  "resolution": {
+    "markResolved": "Mark as Resolved",
+    "viewStories": "View Success Stories",
+    "resolveTitle": "Resolve This Case",
+    "resolutionType": "Resolution Type",
+    "found_safe": "Found Safe",
+    "returned": "Returned",
+    "resolved": "Resolved",
+    "closed": "Closed",
+    "shareStory": "Share Your Story (optional)",
+    "storyPlaceholder": "Tell the community how this case was resolved...",
+    "rating": "Rate the experience",
+    "confirm": "Confirm Resolution",
+    "resolvedMessage": "Case marked as resolved. Thank you!",
+    "storiesTitle": "Success Stories",
+    "storiesSubtitle": "Reunited, returned, and resolved cases",
+    "noStories": "No stories yet",
+    "noStoriesSubtext": "Success stories will appear here when cases are resolved",
+    "missingPerson": "Missing Person",
+    "lostItem": "Lost Item",
+    "foundItem": "Found Item"
+  },
+
+  "notifPrefs": {
+    "missingPersons": "Missing person alerts",
+    "lostFound": "Lost & found alerts",
+    "intel": "Community intel",
+    "radius": "Alert radius",
+    "quietHours": "Quiet hours (no notifications)"
   }
-}
