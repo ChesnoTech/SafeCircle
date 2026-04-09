@@ -1,4 +1,24 @@
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Theme preference: 'system' | 'light' | 'dark'
+export const useThemeStore = create((set, get) => ({
+  preference: 'system', // 'system' | 'light' | 'dark'
+  setPreference: async (pref) => {
+    set({ preference: pref });
+    try {
+      await AsyncStorage.setItem('theme_preference', pref);
+    } catch {}
+  },
+  loadPreference: async () => {
+    try {
+      const saved = await AsyncStorage.getItem('theme_preference');
+      if (saved && ['system', 'light', 'dark'].includes(saved)) {
+        set({ preference: saved });
+      }
+    } catch {}
+  },
+}));
 
 export const useAuthStore = create((set) => ({
   user: null,

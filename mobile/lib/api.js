@@ -147,6 +147,8 @@ export const getNearbyFound = (lat, lng, radius = 5) =>
 // --- Intel ---
 export const submitIntelReport = (data) =>
   api('/intel/report', { method: 'POST', body: JSON.stringify(data) });
+export const getNearbyIntel = (lat, lng, radiusKm = 10) =>
+  api(`/intel/nearby?latitude=${lat}&longitude=${lng}&radius_km=${radiusKm}`);
 
 // --- User ---
 export const getProfile = () => api('/users/me');

@@ -4,21 +4,26 @@ import { useRouter } from 'expo-router';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { getProfile, getMyReports, updateProfile, uploadPhoto, getNotificationPrefs, updateNotificationPrefs } from '../../lib/api';
-import { useAuthStore } from '../../lib/store';
+import { useAuthStore, useThemeStore } from '../../lib/store';
 import { clearTokens } from '../../lib/api';
 import { CONFIG } from '../../lib/config';
 import { t, setLanguage, getLanguage, SUPPORTED_LANGUAGES } from '../../lib/i18n';
+import { useTheme } from '../../lib/theme';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { colors, isDark } = useTheme();
+  const themePreference = useThemeStore((s) => s.preference);
+  const setThemePreference = useThemeStore((s) => s.setPreference);
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [currentLang, setCurrentLang] = useState(getLanguage());
   const [editForm, setEditForm] = useState({ name: '', phone: '' });
   const [saving, setSaving] = useState(false);
   const [notifModalVisible, setNotifModalVisible] = useState(false);
+  const [themeModalVisible, setThemeModalVisible] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -155,6 +160,12 @@ export default function ProfileScreen() {
         <TouchableOpacity onPress={() => router.push('/search')}>
           <MenuItem label={t('search.title')} value={'>'} />
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/leaderboard')}>
+          <MenuItem label={t('leaderboard.title')} value={'>'} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/intel')}>
+          <MenuItem label={t('intel.viewTitle')} value={'>'} />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push('/stories')}>
           <MenuItem label={t('resolution.storiesTitle')} value={'>'} />
         </TouchableOpacity>
@@ -163,6 +174,9 @@ export default function ProfileScreen() {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setNotifModalVisible(true)}>
           <MenuItem label={t('profile.notificationPrefs')} value={`${notifPrefs?.radiusKm || 10} km`} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setThemeModalVisible(true)}>
+          <MenuItem label={t('theme.title')} value={t(`theme.${themePreference}`)} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setLangModalVisible(true)}>
           <MenuItem label={t('profile.language')} value={langLabel} />
@@ -173,6 +187,38 @@ export default function ProfileScreen() {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>{t('profile.signOut')}</Text>
       </TouchableOpacity>
+
+      {/* Theme Modal */}
+      <Modal
+        visible={themeModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setThemeModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, isDark && { backgroundColor: colors.card }]}>
+            <Text style={[styles.modalTitle, isDark && { color: colors.text }]}>{t('theme.title')}</Text>
+            {['light', 'dark', 'system'].map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={[styles.langRow, themePreference === option && { backgroundColor: colors.primary + '15' }]}
+                onPress={() => {
+                  setThemePreference(option);
+                  setThemeModalVisible(false);
+                }}
+              >
+                <Text style={[styles.langText, isDark && { color: colors.text }, themePreference === option && { color: colors.primary, fontWeight: '600' }]}>
+                  {option === 'light' ? '☀️' : option === 'dark' ? '🌙' : '⚙️'} {t(`theme.${option}`)}
+                </Text>
+                {themePreference === option && <Text style={[styles.langCheck, { color: colors.primary }]}>{'✓'}</Text>}
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity style={[styles.modalClose, isDark && { backgroundColor: colors.background, borderColor: colors.border }]} onPress={() => setThemeModalVisible(false)}>
+              <Text style={[styles.modalCloseText, isDark && { color: colors.text }]}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Language Modal */}
       <Modal

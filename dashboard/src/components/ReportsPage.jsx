@@ -10,10 +10,48 @@ function getTimeAgo(dateStr) {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
+function escapeCSV(value) {
+  if (value == null) return '';
+  const str = String(value);
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function exportToCSV(reports) {
+  const headers = ['ID', 'Name', 'Age', 'Gender', 'Status', 'Sightings', 'Clothing', 'Circumstances', 'Latitude', 'Longitude', 'Created At'];
+  const rows = reports.map((r) => [
+    escapeCSV(r.id),
+    escapeCSV(r.name),
+    escapeCSV(r.age),
+    escapeCSV(r.gender),
+    escapeCSV(r.status),
+    escapeCSV(r.sighting_count || 0),
+    escapeCSV(r.clothing_description),
+    escapeCSV(r.circumstances),
+    escapeCSV(r.latitude),
+    escapeCSV(r.longitude),
+    escapeCSV(r.created_at ? new Date(r.created_at).toISOString() : ''),
+  ]);
+
+  const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `safecircle-reports-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export default function ReportsPage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     // Default: Moscow center (configurable per deployment)
@@ -23,11 +61,37 @@ export default function ReportsPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const filteredReports = statusFilter === 'all'
+    ? reports
+    : reports.filter((r) => r.status === statusFilter);
+
   return (
     <div>
-      <div className="page-header">
-        <h1>Missing Person Reports</h1>
-        <p>All active and resolved reports in the region</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1>Missing Person Reports</h1>
+          <p>All active and resolved reports in the region</p>
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <select
+            className="form-input"
+            style={{ width: 140, padding: '6px 10px', fontSize: 13 }}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <button
+            className="btn btn-outline"
+            onClick={() => exportToCSV(filteredReports)}
+            disabled={filteredReports.length === 0}
+            title="Export to CSV"
+          >
+            {'📥'} Export CSV
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -49,10 +113,10 @@ export default function ReportsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {reports.length === 0 ? (
+                  {filteredReports.length === 0 ? (
                     <tr><td colSpan={6} style={{ textAlign: 'center', color: '#9CA3AF' }}>No reports found</td></tr>
                   ) : (
-                    reports.map((r) => (
+                    filteredReports.map((r) => (
                       <tr
                         key={r.id}
                         onClick={() => setSelectedReport(r)}
