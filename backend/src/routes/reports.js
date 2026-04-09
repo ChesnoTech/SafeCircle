@@ -217,4 +217,87 @@ export async function reportRoutes(fastify) {
 
     return result.rows[0];
   });
+
+  // --- Add photos to a report ---
+  fastify.post('/missing/:id/photos', {
+    preHandler: [fastify.authenticate],
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string', format: 'uuid' } },
+      },
+      body: {
+        type: 'object',
+        required: ['photo_urls'],
+        properties: {
+          photo_urls: {
+            type: 'array',
+            items: { type: 'string' },
+            minItems: 1,
+            maxItems: config.maxPhotosPerReport,
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const reportId = request.params.id;
+    const { photo_urls } = request.body;
+
+    // Verify report belongs to user
+    const report = await fastify.db.query(
+      'SELECT id FROM missing_reports WHERE id = $1 AND reporter_id = $2',
+      [reportId, request.user.id]
+    );
+    if (report.rows.length === 0) {
+      return reply.code(404).send({ error: 'Report not found or not owned by you' });
+    }
+
+    // Check existing photo count
+    const existing = await fastify.db.query(
+      'SELECT COUNT(*)::int AS count FROM report_photos WHERE report_type = $1 AND report_id = $2',
+      ['missing', reportId]
+    );
+    const currentCount = existing.rows[0].count;
+    if (currentCount + photo_urls.length > config.maxPhotosPerReport) {
+      return reply.code(400).send({
+        error: `Maximum ${config.maxPhotosPerReport} photos per report. Currently have ${currentCount}.`,
+      });
+    }
+
+    // Insert photos
+    const photos = [];
+    for (let i = 0; i < photo_urls.length; i++) {
+      const result = await fastify.db.query(
+        `INSERT INTO report_photos (report_type, report_id, photo_url, sort_order)
+         VALUES ($1, $2, $3, $4)
+         RETURNING *`,
+        ['missing', reportId, photo_urls[i], currentCount + i]
+      );
+      photos.push(result.rows[0]);
+    }
+
+    reply.code(201);
+    return { photos };
+  });
+
+  // --- Get photos for a report ---
+  fastify.get('/missing/:id/photos', {
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string', format: 'uuid' } },
+      },
+    },
+  }, async (request) => {
+    const result = await fastify.db.query(
+      `SELECT id, photo_url, sort_order, created_at
+       FROM report_photos
+       WHERE report_type = $1 AND report_id = $2
+       ORDER BY sort_order ASC`,
+      ['missing', request.params.id]
+    );
+    return { photos: result.rows };
+  });
 }

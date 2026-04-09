@@ -14,6 +14,15 @@ export const CONFIG = {
   // Grid cell size for Socket.IO region rooms (must match backend)
   GEO_GRID_SIZE: 0.01,
 
+  // Offline
+  OFFLINE_CACHE_MAX_ALERTS: 100,
+  DRAFT_AUTO_SAVE_INTERVAL_MS: 30000,
+  SYNC_RETRY_INTERVAL_MS: 60000,
+  MAX_DRAFTS: 20,
+
+  // Photos
+  MAX_PHOTOS: 5,
+
   // Upload
   MAX_PHOTO_QUALITY: 0.8,
   ALLOWED_IMAGE_TYPES: ['images'],

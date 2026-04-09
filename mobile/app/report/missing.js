@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import { createMissingReport, uploadPhoto, api } from '../../lib/api';
+import { createMissingReport, uploadPhoto, addReportPhotos, api } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { CONFIG } from '../../lib/config';
 import { t } from '../../lib/i18n';
@@ -15,7 +15,7 @@ export default function MissingReportScreen() {
   const [phase, setPhase] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [photo, setPhoto] = useState(null);
+  const [photos, setPhotos] = useState([]);
   const [reportId, setReportId] = useState(null);
   const [form, setForm] = useState({
     name: '',
@@ -28,17 +28,21 @@ export default function MissingReportScreen() {
   });
   const startTime = useRef(Date.now());
 
+  const canAddMore = photos.length < CONFIG.MAX_PHOTOS;
+
   const pickImage = async () => {
+    if (!canAddMore) return;
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: CONFIG.ALLOWED_IMAGE_TYPES,
       quality: CONFIG.MAX_PHOTO_QUALITY,
     });
     if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
+      setPhotos((prev) => [...prev, result.assets[0].uri]);
     }
   };
 
   const takePhoto = async () => {
+    if (!canAddMore) return;
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       setError(t('missing.cameraPermission'));
@@ -48,25 +52,42 @@ export default function MissingReportScreen() {
       quality: CONFIG.MAX_PHOTO_QUALITY,
     });
     if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
+      setPhotos((prev) => [...prev, result.assets[0].uri]);
     }
   };
 
+  const removePhoto = (index) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handlePhase1Submit = async () => {
-    if (!photo) return setError(t('missing.photoRequired'));
+    if (photos.length === 0) return setError(t('missing.photoRequired'));
     if (!form.name.trim()) return setError(t('missing.nameRequired'));
     setError('');
     setLoading(true);
     try {
-      const uploaded = await uploadPhoto(photo);
+      // Upload all photos
+      const uploadedUrls = [];
+      for (const uri of photos) {
+        const uploaded = await uploadPhoto(uri);
+        uploadedUrls.push(uploaded.url);
+      }
+
+      // Create report with the first photo
       const report = await createMissingReport({
         name: form.name.trim(),
         age: form.age ? parseInt(form.age) : undefined,
         alert_radius_km: parseInt(form.alert_radius_km) || 5,
         latitude,
         longitude,
-        photo_url: uploaded.url,
+        photo_url: uploadedUrls[0],
       });
+
+      // Add additional photos if any
+      if (uploadedUrls.length > 1) {
+        await addReportPhotos(report.id, uploadedUrls.slice(1));
+      }
+
       const elapsed = ((Date.now() - startTime.current) / 1000).toFixed(1);
       setReportId(report.id);
       setPhase(2);
@@ -109,22 +130,37 @@ export default function MissingReportScreen() {
           <Text style={styles.urgentText}>{t('missing.quickAlertBanner')}</Text>
         </View>
 
-        <TouchableOpacity style={styles.photoPicker} onPress={takePhoto}>
-          {photo ? (
-            <Image source={{ uri: photo }} style={styles.photoPreview} />
-          ) : (
-            <View style={styles.photoPlaceholder}>
-              <Text style={styles.photoIcon}>📸</Text>
-              <Text style={styles.photoText}>{t('missing.takePhoto')}</Text>
+        {/* Photo strip */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photoStrip}>
+          {photos.map((uri, index) => (
+            <View key={index} style={styles.photoThumbWrap}>
+              <Image source={{ uri }} style={styles.photoThumb} />
+              <TouchableOpacity style={styles.removeBtn} onPress={() => removePhoto(index)}>
+                <Text style={styles.removeBtnText}>X</Text>
+              </TouchableOpacity>
             </View>
-          )}
-        </TouchableOpacity>
+          ))}
 
-        <TouchableOpacity style={styles.galleryLink} onPress={pickImage}>
-          <Text style={styles.galleryLinkText}>
-            {photo ? t('missing.chooseDifferent') : t('missing.chooseFromGallery')}
+          {canAddMore && (
+            <TouchableOpacity style={styles.addPhotoBtn} onPress={takePhoto}>
+              <Text style={styles.addPhotoIcon}>+</Text>
+              <Text style={styles.addPhotoText}>{t('missing.takePhoto')}</Text>
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+
+        <View style={styles.photoActions}>
+          {canAddMore && (
+            <TouchableOpacity onPress={pickImage}>
+              <Text style={styles.galleryLinkText}>
+                {photos.length === 0 ? t('missing.chooseFromGallery') : t('photos.addMore')}
+              </Text>
+            </TouchableOpacity>
+          )}
+          <Text style={styles.photoCount}>
+            {t('photos.photoCount', { count: photos.length, max: CONFIG.MAX_PHOTOS })}
           </Text>
-        </TouchableOpacity>
+        </View>
 
         <Text style={styles.label}>{t('missing.nameLabel')}</Text>
         <TextInput
@@ -175,7 +211,7 @@ export default function MissingReportScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.sentBanner}>
-        <Text style={styles.sentIcon}>✓</Text>
+        <Text style={styles.sentIcon}>{'✓'}</Text>
         <Text style={styles.sentText}>{t('missing.alertLive')}</Text>
       </View>
 
@@ -264,16 +300,27 @@ const styles = StyleSheet.create({
   },
   sentIcon: { fontSize: 20, color: CONFIG.COLORS.success },
   sentText: { color: '#166534', fontWeight: '600', fontSize: 14 },
-  photoPicker: { alignItems: 'center', marginBottom: 8 },
-  photoPreview: { width: 180, height: 180, borderRadius: 16 },
-  photoPlaceholder: {
-    width: 180, height: 180, borderRadius: 16, backgroundColor: '#FEE2E2',
+  // Multi-photo strip
+  photoStrip: { marginBottom: 8 },
+  photoThumbWrap: { position: 'relative', marginRight: 10 },
+  photoThumb: { width: 120, height: 120, borderRadius: 12 },
+  removeBtn: {
+    position: 'absolute', top: -6, right: -6, width: 24, height: 24,
+    borderRadius: 12, backgroundColor: CONFIG.COLORS.error,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  removeBtnText: { color: '#fff', fontSize: 12, fontWeight: 'bold' },
+  addPhotoBtn: {
+    width: 120, height: 120, borderRadius: 12, backgroundColor: '#FEE2E2',
     justifyContent: 'center', alignItems: 'center', borderWidth: 2,
     borderColor: CONFIG.COLORS.primary, borderStyle: 'dashed',
   },
-  photoIcon: { fontSize: 48 },
-  photoText: { color: CONFIG.COLORS.primary, marginTop: 8, fontWeight: '600', fontSize: 16 },
-  galleryLink: { alignItems: 'center', marginBottom: 16 },
+  addPhotoIcon: { fontSize: 32, color: CONFIG.COLORS.primary },
+  addPhotoText: { color: CONFIG.COLORS.primary, marginTop: 4, fontWeight: '600', fontSize: 12 },
+  photoActions: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8,
+  },
+  photoCount: { fontSize: 13, color: CONFIG.COLORS.textSecondary },
   galleryLinkText: { color: CONFIG.COLORS.info, fontSize: 14 },
   label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 6, marginTop: 12 },
   input: {

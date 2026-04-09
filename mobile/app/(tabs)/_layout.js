@@ -3,7 +3,7 @@ import { Text, I18nManager } from 'react-native';
 import { CONFIG } from '../../lib/config';
 import { t, isRTL } from '../../lib/i18n';
 
-const TAB_ICONS = { Home: '🏠', Map: '🗺️', Report: '🚨', Profile: '👤' };
+const TAB_ICONS = { Home: '🏠', Map: '🗺️', Report: '🚨', Messages: '💬', Profile: '👤' };
 
 function TabIcon({ name, focused }) {
   return <Text style={{ fontSize: focused ? 28 : 24 }}>{TAB_ICONS[name] || '•'}</Text>;
@@ -46,6 +46,13 @@ export default function TabLayout() {
         options={{
           title: t('tabs.report'),
           tabBarIcon: ({ focused }) => <TabIcon name="Report" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: t('tabs.messages'),
+          tabBarIcon: ({ focused }) => <TabIcon name="Messages" focused={focused} />,
         }}
       />
       <Tabs.Screen

@@ -173,7 +173,8 @@
     "home": "Home",
     "map": "Map",
     "report": "Report",
-    "profile": "Profile"
+    "profile": "Profile",
+    "messages": "Messages"
   },
 
   "time": {
@@ -222,6 +223,24 @@
     "unreadCount": "{{count}} unread",
     "conversationClosed": "This conversation has been closed",
     "you": "You"
+  },
+
+  "offline": {
+    "offlineBanner": "You are offline — showing cached data",
+    "draftSaved": "Draft saved",
+    "draftDeleted": "Draft deleted",
+    "draftsTitle": "Drafts",
+    "noDrafts": "No saved drafts",
+    "syncPending": "{{count}} report(s) waiting to sync",
+    "syncComplete": "All reports synced",
+    "resume": "Resume editing"
+  },
+
+  "photos": {
+    "addMore": "Add more photos",
+    "maxReached": "Maximum {{max}} photos",
+    "removePhoto": "Remove",
+    "photoCount": "{{count}}/{{max}} photos"
   },
 
   "onboarding": {

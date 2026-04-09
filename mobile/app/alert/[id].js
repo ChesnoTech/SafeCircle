@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, TextInput,
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getReport, getSightings, reportSighting } from '../../lib/api';
+import { getReport, getSightings, reportSighting, getReportPhotos } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { watchReport, unwatchReport, getSocket } from '../../lib/socket';
 import { CONFIG } from '../../lib/config';
@@ -52,6 +52,11 @@ export default function AlertDetailScreen() {
     queryFn: () => getSightings(id),
   });
 
+  const { data: photosData } = useQuery({
+    queryKey: ['report-photos', id],
+    queryFn: () => getReportPhotos(id),
+  });
+
   const sightingMutation = useMutation({
     mutationFn: (data) => reportSighting(data),
     onSuccess: () => {
@@ -88,9 +93,19 @@ export default function AlertDetailScreen() {
   }
 
   const sightings = sightingsData?.sightings || [];
+  const extraPhotos = photosData?.photos || [];
+  const allPhotos = [{ photo_url: report.photo_url }, ...extraPhotos];
 
   return (
     <ScrollView style={styles.container}>
+      {allPhotos.length > 1 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photoGallery}>
+          {allPhotos.map((p, i) => (
+            <Image key={i} source={{ uri: p.photo_url }} style={styles.galleryPhoto} />
+          ))}
+        </ScrollView>
+      )}
+
       <View style={styles.header}>
         <Image
           source={{ uri: report.photo_url }}
@@ -223,6 +238,8 @@ export default function AlertDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  photoGallery: { backgroundColor: '#000', paddingVertical: 8 },
+  galleryPhoto: { width: 200, height: 200, borderRadius: 8, marginHorizontal: 4 },
   header: { flexDirection: 'row', backgroundColor: '#fff', padding: 16 },
   photo: { width: 120, height: 120, borderRadius: 12, backgroundColor: '#eee' },
   headerInfo: { flex: 1, marginLeft: 16, justifyContent: 'center' },
