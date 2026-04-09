@@ -19,6 +19,9 @@ import { userRoutes } from './routes/users.js';
 import { notificationRoutes } from './routes/notifications.js';
 import { verificationRoutes } from './routes/verification.js';
 import { resolutionRoutes } from './routes/resolution.js';
+import { credibilityRoutes } from './routes/credibility.js';
+import { moderationRoutes } from './routes/moderation.js';
+import { messagingRoutes } from './routes/messaging.js';
 
 const app = Fastify({
   logger: {
@@ -49,6 +52,9 @@ await app.register(userRoutes, { prefix: '/api/users' });
 await app.register(notificationRoutes, { prefix: '/api/notifications' });
 await app.register(verificationRoutes, { prefix: '/api/verification' });
 await app.register(resolutionRoutes, { prefix: '/api' });
+await app.register(credibilityRoutes, { prefix: '/api/credibility' });
+await app.register(moderationRoutes, { prefix: '/api/moderation' });
+await app.register(messagingRoutes, { prefix: '/api/messaging' });
 
 // --- Health Check ---
 app.get('/api/health', async () => ({
@@ -80,6 +86,15 @@ io.on('connection', (socket) => {
 
   socket.on('unwatch_report', (reportId) => {
     socket.leave(`report:${reportId}`);
+  });
+
+  // Join a personal room for messaging events
+  socket.on('join_user', (userId) => {
+    socket.join(`user:${userId}`);
+  });
+
+  socket.on('leave_user', (userId) => {
+    socket.leave(`user:${userId}`);
   });
 
   socket.on('disconnect', () => {

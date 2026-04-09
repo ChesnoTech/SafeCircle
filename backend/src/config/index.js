@@ -57,7 +57,24 @@ export const config = {
   verificationPassThreshold: parseInt(process.env.VERIFICATION_PASS_THRESHOLD || '2'),
   verificationClaimExpiryHours: parseInt(process.env.VERIFICATION_CLAIM_EXPIRY_HOURS || '48'),
 
+  // Email verification
+  emailVerificationCodeLength: parseInt(process.env.EMAIL_VERIFICATION_CODE_LENGTH || '6'),
+  emailVerificationExpiryMinutes: parseInt(process.env.EMAIL_VERIFICATION_EXPIRY_MINUTES || '15'),
+
   // Stories pagination
   storiesPageSize: parseInt(process.env.STORIES_PAGE_SIZE || '20'),
   storyMaxLength: parseInt(process.env.STORY_MAX_LENGTH || '5000'),
+
+  // Credibility scoring
+  credibilityRecentEventsLimit: parseInt(process.env.CREDIBILITY_RECENT_EVENTS_LIMIT || '20'),
+  credibilityLeaderboardLimit: parseInt(process.env.CREDIBILITY_LEADERBOARD_LIMIT || '20'),
+
+  // Messaging
+  messagingPageSize: parseInt(process.env.MESSAGING_PAGE_SIZE || '20'),
+  messageMaxLength: parseInt(process.env.MESSAGE_MAX_LENGTH || '2000'),
+  messagingRateLimit: parseInt(process.env.MESSAGING_RATE_LIMIT || '30'),
+
+  // Moderation
+  moderationFlagRateLimit: parseInt(process.env.MODERATION_FLAG_RATE_LIMIT || '10'),
+  moderationPageSize: parseInt(process.env.MODERATION_PAGE_SIZE || '20'),
 };

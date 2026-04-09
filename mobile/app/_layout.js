@@ -39,11 +39,14 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ title: t('auth.signIn'), headerShown: false }} />
+        <Stack.Screen name="verify-email" options={{ title: t('verification.verifyEmail'), headerShown: false }} />
         <Stack.Screen name="report/missing" options={{ title: t('reportTypes.missingPerson.title') }} />
         <Stack.Screen name="report/lost" options={{ title: t('reportTypes.lostItem.title') }} />
         <Stack.Screen name="report/found" options={{ title: t('reportTypes.foundSomething.title') }} />
         <Stack.Screen name="report/suspicious" options={{ title: t('reportTypes.suspiciousActivity.title') }} />
         <Stack.Screen name="alert/[id]" options={{ title: t('common.loading') }} />
+        <Stack.Screen name="messages/index" options={{ title: t('messaging.conversations') }} />
+        <Stack.Screen name="messages/[id]" options={{ title: t('messaging.conversations') }} />
       </Stack>
     </QueryClientProvider>
   );

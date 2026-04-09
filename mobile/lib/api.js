@@ -104,6 +104,12 @@ export const login = (email, password) =>
 export const register = (data) =>
   api('/auth/register', { method: 'POST', body: JSON.stringify(data) });
 
+export const verifyEmail = (code) =>
+  api('/auth/verify-email', { method: 'POST', body: JSON.stringify({ code }) });
+
+export const resendVerificationCode = () =>
+  api('/auth/resend-code', { method: 'POST' });
+
 // --- Reports ---
 export const getNearbyAlerts = (lat, lng, radius = 10) =>
   api(`/reports/missing/nearby?latitude=${lat}&longitude=${lng}&radius_km=${radius}`);
@@ -164,3 +170,23 @@ export const resolveReport = (reportId, data) =>
 export const getStories = (page = 1) => api(`/stories?page=${page}`);
 export const celebrateStory = (storyId) =>
   api(`/stories/${storyId}/celebrate`, { method: 'POST' });
+
+// --- Credibility ---
+export const getCredibilityScore = () => api('/credibility/score');
+export const getLeaderboard = () => api('/credibility/leaderboard');
+
+// --- Messaging ---
+export const startConversation = (reportType, reportId, recipientId) =>
+  api('/messaging/conversations', {
+    method: 'POST',
+    body: JSON.stringify({ report_type: reportType, report_id: reportId, recipient_id: recipientId }),
+  });
+export const getConversations = (page = 1) =>
+  api(`/messaging/conversations?page=${page}`);
+export const getMessages = (conversationId, page = 1) =>
+  api(`/messaging/conversations/${conversationId}/messages?page=${page}`);
+export const sendMessage = (conversationId, body) =>
+  api(`/messaging/conversations/${conversationId}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ body }),
+  });

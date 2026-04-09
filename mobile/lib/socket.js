@@ -78,3 +78,26 @@ export function unwatchReport(reportId) {
   const s = getSocket();
   s.emit('unwatch_report', reportId);
 }
+
+// --- Messaging ---
+export function joinUserRoom(userId) {
+  const s = getSocket();
+  s.emit('join_user', userId);
+}
+
+export function leaveUserRoom(userId) {
+  const s = getSocket();
+  s.emit('leave_user', userId);
+}
+
+export function onNewMessage(callback) {
+  const s = getSocket();
+  s.on('new_message', callback);
+  return () => s.off('new_message', callback);
+}
+
+export function onNewConversation(callback) {
+  const s = getSocket();
+  s.on('new_conversation', callback);
+  return () => s.off('new_conversation', callback);
+}

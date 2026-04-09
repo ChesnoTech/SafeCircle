@@ -26,7 +26,13 @@ export default function LoginScreen() {
 
       await setTokens(data.token, data.refreshToken);
       setUser(data.user);
-      router.replace('/');
+
+      // After registration, go to email verification; after login, check if verified
+      if (isRegister || (data.user && !data.user.email_verified)) {
+        router.replace('/verify-email');
+      } else {
+        router.replace('/');
+      }
     } catch (err) {
       const msg = err.message || '';
       if (msg === 'Network request failed') {
