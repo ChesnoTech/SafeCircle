@@ -35,7 +35,7 @@ When cases resolve, users can share their reunification story. Public feed of su
 
 ## Features
 
-### Completed (Sprint 1-5)
+### Completed (Sprint 1-6)
 
 - **Real-time alerts** - Socket.IO region-based rooms, geographic grid cells
 - **Config-driven architecture** - zero hardcoded values, all env vars
@@ -59,12 +59,14 @@ When cases resolve, users can share their reunification story. Public feed of su
 - **Offline caching** - AsyncStorage alert cache, draft reports, sync queue for offline-first usage
 - **Multi-photo support** - up to 5 photos per missing person report, horizontal gallery in detail view
 - **Messages tab** - dedicated bottom tab for conversation access
+- **Sighting photos** - photo evidence for sightings, reuses report_photos infrastructure
+- **Unified search** - ILIKE text search across missing/lost/found with optional geo filtering
+- **Profile enhancements** - avatar upload, edit name/phone, search link in settings
+- **Community analytics** - platform stats, geographic heatmap, trending areas API
 
 ### Planned
 
 - Web dashboard for law enforcement
-- Community analytics and heat maps
-- Photo evidence for sightings
 - Offline map tiles
 
 ## Project Structure
@@ -112,6 +114,7 @@ docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/mi
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/006_moderation.sql
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/007_messaging.sql
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/008_report_photos.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/009_sighting_photos.sql
 
 # Start API
 cd backend && npm install && npm run dev
@@ -155,6 +158,13 @@ cd mobile && npm install && npx expo start
 | GET | /api/messaging/conversations | List my conversations |
 | GET | /api/messaging/conversations/:id/messages | Get messages |
 | POST | /api/messaging/conversations/:id/messages | Send message |
+| POST | /api/sightings/:id/photos | Add photos to sighting |
+| GET | /api/sightings/:id/photos | Get sighting photos |
+| GET | /api/search | Unified search (missing/lost/found) |
+| PATCH | /api/users/me | Update profile (name, phone, photo) |
+| GET | /api/analytics/stats | Platform statistics |
+| GET | /api/analytics/heatmap | Geographic heatmap data |
+| GET | /api/analytics/trending | Trending areas |
 | GET | /api/health | Health check |
 
 ## Internationalization

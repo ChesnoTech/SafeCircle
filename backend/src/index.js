@@ -22,6 +22,8 @@ import { resolutionRoutes } from './routes/resolution.js';
 import { credibilityRoutes } from './routes/credibility.js';
 import { moderationRoutes } from './routes/moderation.js';
 import { messagingRoutes } from './routes/messaging.js';
+import { searchRoutes } from './routes/search.js';
+import { analyticsRoutes } from './routes/analytics.js';
 
 const app = Fastify({
   logger: {
@@ -55,6 +57,8 @@ await app.register(resolutionRoutes, { prefix: '/api' });
 await app.register(credibilityRoutes, { prefix: '/api/credibility' });
 await app.register(moderationRoutes, { prefix: '/api/moderation' });
 await app.register(messagingRoutes, { prefix: '/api/messaging' });
+await app.register(searchRoutes, { prefix: '/api/search' });
+await app.register(analyticsRoutes, { prefix: '/api/analytics' });
 
 // --- Health Check ---
 app.get('/api/health', async () => ({

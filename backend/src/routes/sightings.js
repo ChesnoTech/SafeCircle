@@ -63,4 +63,83 @@ export async function sightingRoutes(fastify) {
 
     return { sightings: result.rows, count: result.rows.length };
   });
+
+  // --- Add photos to a sighting ---
+  fastify.post('/:sightingId/photos', {
+    preHandler: [fastify.authenticate],
+    schema: {
+      params: {
+        type: 'object',
+        required: ['sightingId'],
+        properties: { sightingId: { type: 'string', format: 'uuid' } },
+      },
+      body: {
+        type: 'object',
+        required: ['photo_urls'],
+        properties: {
+          photo_urls: {
+            type: 'array',
+            items: { type: 'string' },
+            minItems: 1,
+            maxItems: config.maxPhotosPerReport,
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const sightingId = request.params.sightingId;
+    const { photo_urls } = request.body;
+
+    // Verify sighting belongs to user
+    const sighting = await fastify.db.query(
+      'SELECT id FROM sightings WHERE id = $1 AND spotter_id = $2',
+      [sightingId, request.user.id]
+    );
+    if (sighting.rows.length === 0) {
+      return reply.code(404).send({ error: 'Sighting not found or not yours' });
+    }
+
+    const existing = await fastify.db.query(
+      'SELECT COUNT(*)::int AS count FROM report_photos WHERE report_type = $1 AND report_id = $2',
+      ['sighting', sightingId]
+    );
+    const currentCount = existing.rows[0].count;
+    if (currentCount + photo_urls.length > config.maxPhotosPerReport) {
+      return reply.code(400).send({ error: `Maximum ${config.maxPhotosPerReport} photos per sighting` });
+    }
+
+    const photos = [];
+    for (let i = 0; i < photo_urls.length; i++) {
+      const result = await fastify.db.query(
+        `INSERT INTO report_photos (report_type, report_id, photo_url, sort_order)
+         VALUES ($1, $2, $3, $4)
+         RETURNING *`,
+        ['sighting', sightingId, photo_urls[i], currentCount + i]
+      );
+      photos.push(result.rows[0]);
+    }
+
+    reply.code(201);
+    return { photos };
+  });
+
+  // --- Get photos for a sighting ---
+  fastify.get('/:sightingId/photos', {
+    schema: {
+      params: {
+        type: 'object',
+        required: ['sightingId'],
+        properties: { sightingId: { type: 'string', format: 'uuid' } },
+      },
+    },
+  }, async (request) => {
+    const result = await fastify.db.query(
+      `SELECT id, photo_url, sort_order, created_at
+       FROM report_photos
+       WHERE report_type = $1 AND report_id = $2
+       ORDER BY sort_order ASC`,
+      ['sighting', request.params.sightingId]
+    );
+    return { photos: result.rows };
+  });
 }

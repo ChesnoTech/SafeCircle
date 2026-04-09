@@ -45,6 +45,7 @@ export default function RootLayout() {
         <Stack.Screen name="report/found" options={{ title: t('reportTypes.foundSomething.title') }} />
         <Stack.Screen name="report/suspicious" options={{ title: t('reportTypes.suspiciousActivity.title') }} />
         <Stack.Screen name="alert/[id]" options={{ title: t('common.loading') }} />
+        <Stack.Screen name="search" options={{ title: t('search.title') }} />
         <Stack.Screen name="messages/index" options={{ title: t('messaging.conversations') }} />
         <Stack.Screen name="messages/[id]" options={{ title: t('messaging.conversations') }} />
       </Stack>

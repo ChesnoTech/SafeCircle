@@ -80,4 +80,11 @@ export const config = {
 
   // Photos
   maxPhotosPerReport: parseInt(process.env.MAX_PHOTOS_PER_REPORT || '5'),
+
+  // Search
+  searchPageSize: parseInt(process.env.SEARCH_PAGE_SIZE || '20'),
+
+  // Analytics
+  analyticsHeatmapLimit: parseInt(process.env.ANALYTICS_HEATMAP_LIMIT || '500'),
+  analyticsTrendingDays: parseInt(process.env.ANALYTICS_TRENDING_DAYS || '7'),
 };

@@ -160,7 +160,10 @@
     "credibility": "Credibility: {{score}}/100",
     "missing": "Missing",
     "lost": "Lost",
-    "found": "Found"
+    "found": "Found",
+    "changePhoto": "Change Photo",
+    "editProfile": "Edit Profile",
+    "phone": "Phone"
   },
 
   "map": {
@@ -241,6 +244,15 @@
     "maxReached": "Maximum {{max}} photos",
     "removePhoto": "Remove",
     "photoCount": "{{count}}/{{max}} photos"
+  },
+
+  "search": {
+    "title": "Search",
+    "placeholder": "Search reports, items, people...",
+    "all": "All",
+    "missing": "Missing",
+    "lost": "Lost",
+    "found": "Found"
   },
 
   "onboarding": {
