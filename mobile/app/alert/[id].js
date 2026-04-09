@@ -7,14 +7,15 @@ import { getReport, getSightings, reportSighting } from '../../lib/api';
 import { useLocationStore } from '../../lib/store';
 import { watchReport, unwatchReport, getSocket } from '../../lib/socket';
 import { CONFIG } from '../../lib/config';
+import { t } from '../../lib/i18n';
 
 function getTimeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 60) return t('time.minutesAgo', { count: mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return t('time.hoursAgo', { count: hours });
+  return t('time.daysAgo', { count: Math.floor(hours / 24) });
 }
 
 export default function AlertDetailScreen() {
@@ -81,7 +82,7 @@ export default function AlertDetailScreen() {
   if (report.error) {
     return (
       <View style={styles.center}>
-        <Text style={{ color: CONFIG.COLORS.error, fontSize: 16 }}>Report not found</Text>
+        <Text style={{ color: CONFIG.COLORS.error, fontSize: 16 }}>{t('alertDetail.notFound')}</Text>
       </View>
     );
   }
@@ -97,8 +98,8 @@ export default function AlertDetailScreen() {
         />
         <View style={styles.headerInfo}>
           <Text style={styles.name}>{report.name}</Text>
-          {report.age && <Text style={styles.detail}>Age: {report.age}</Text>}
-          {report.gender !== 'unknown' && <Text style={styles.detail}>Gender: {report.gender}</Text>}
+          {report.age && <Text style={styles.detail}>{t('alertDetail.age', { age: report.age })}</Text>}
+          {report.gender !== 'unknown' && <Text style={styles.detail}>{t('alertDetail.gender', { gender: report.gender })}</Text>}
           <Text style={styles.time}>{getTimeAgo(report.created_at)}</Text>
           <View style={[styles.statusBadge, report.status === 'active' ? styles.statusActive : styles.statusResolved]}>
             <Text style={styles.statusText}>{report.status}</Text>
@@ -108,21 +109,21 @@ export default function AlertDetailScreen() {
 
       {report.clothing_description && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Clothing</Text>
+          <Text style={styles.sectionTitle}>{t('alertDetail.clothing')}</Text>
           <Text style={styles.sectionBody}>{report.clothing_description}</Text>
         </View>
       )}
 
       {report.circumstances && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Circumstances</Text>
+          <Text style={styles.sectionTitle}>{t('alertDetail.circumstances')}</Text>
           <Text style={styles.sectionBody}>{report.circumstances}</Text>
         </View>
       )}
 
       {report.last_seen_address && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Last Seen</Text>
+          <Text style={styles.sectionTitle}>{t('alertDetail.lastSeen')}</Text>
           <Text style={styles.sectionBody}>{report.last_seen_address}</Text>
         </View>
       )}
@@ -140,7 +141,7 @@ export default function AlertDetailScreen() {
           <Marker
             coordinate={{ latitude: report.latitude, longitude: report.longitude }}
             pinColor="#DC2626"
-            title="Last seen"
+            title={t('alertDetail.lastSeen')}
           />
           <Circle
             center={{ latitude: report.latitude, longitude: report.longitude }}
@@ -161,9 +162,9 @@ export default function AlertDetailScreen() {
       )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Sightings ({sightings.length})</Text>
+        <Text style={styles.sectionTitle}>{t('alertDetail.sightingsCount', { count: sightings.length })}</Text>
         {sightings.length === 0 ? (
-          <Text style={styles.emptyText}>No sightings reported yet</Text>
+          <Text style={styles.emptyText}>{t('alertDetail.noSightings')}</Text>
         ) : (
           sightings.map((s) => (
             <View key={s.id} style={styles.sightingCard}>
@@ -179,8 +180,8 @@ export default function AlertDetailScreen() {
         <>
           {showSightingForm ? (
             <View style={styles.sightingForm}>
-              <Text style={styles.formTitle}>Report a Sighting</Text>
-              <Text style={styles.label}>Confidence</Text>
+              <Text style={styles.formTitle}>{t('alertDetail.sightingFormTitle')}</Text>
+              <Text style={styles.label}>{t('alertDetail.confidence')}</Text>
               <View style={styles.confidenceRow}>
                 {['certain', 'likely', 'unsure'].map((c) => (
                   <TouchableOpacity
@@ -188,19 +189,19 @@ export default function AlertDetailScreen() {
                     style={[styles.confButton, confidence === c && styles.confActive]}
                     onPress={() => setConfidence(c)}
                   >
-                    <Text style={[styles.confText, confidence === c && styles.confTextActive]}>{c}</Text>
+                    <Text style={[styles.confText, confidence === c && styles.confTextActive]}>{t(`alertDetail.${c}`)}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
               <TextInput
                 style={[styles.input, styles.multiline]}
-                placeholder="Notes (optional)"
+                placeholder={t('alertDetail.notesPlaceholder')}
                 value={sightingNotes}
                 onChangeText={setSightingNotes}
                 multiline
               />
               <TouchableOpacity style={styles.submitButton} onPress={handleReportSighting}>
-                <Text style={styles.submitText}>Submit Sighting</Text>
+                <Text style={styles.submitText}>{t('alertDetail.submitSighting')}</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -208,7 +209,7 @@ export default function AlertDetailScreen() {
               style={styles.sightingButton}
               onPress={() => setShowSightingForm(true)}
             >
-              <Text style={styles.sightingButtonText}>I've Seen This Person</Text>
+              <Text style={styles.sightingButtonText}>{t('alertDetail.reportSighting')}</Text>
             </TouchableOpacity>
           )}
         </>

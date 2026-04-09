@@ -182,6 +182,48 @@
     "daysAgo": "{{count}}d ago"
   },
 
+  "alertDetail": {
+    "notFound": "Report not found",
+    "age": "Age: {{age}}",
+    "gender": "Gender: {{gender}}",
+    "clothing": "Clothing",
+    "circumstances": "Circumstances",
+    "lastSeen": "Last Seen",
+    "sightingsCount": "Sightings ({{count}})",
+    "noSightings": "No sightings reported yet",
+    "reportSighting": "I've Seen This Person",
+    "sightingFormTitle": "Report a Sighting",
+    "confidence": "Confidence",
+    "certain": "certain",
+    "likely": "likely",
+    "unsure": "unsure",
+    "notesPlaceholder": "Notes (optional)",
+    "submitSighting": "Submit Sighting"
+  },
+
+  "verification": {
+    "enterCode": "Enter verification code",
+    "codeSent": "A verification code has been sent to your email",
+    "codeExpired": "Code expired. Please request a new one.",
+    "resendCode": "Resend Code",
+    "verified": "Email verified successfully!",
+    "verifyEmail": "Verify Email",
+    "invalidCode": "Invalid code. Please try again."
+  },
+
+  "messaging": {
+    "conversations": "Messages",
+    "noConversations": "No conversations yet",
+    "noConversationsHint": "Start a conversation from a report to connect with finders or reporters",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "startConversation": "Start Conversation",
+    "messageAbout": "Message about this report",
+    "unreadCount": "{{count}} unread",
+    "conversationClosed": "This conversation has been closed",
+    "you": "You"
+  },
+
   "onboarding": {
     "welcome": "Welcome to SafeCircle",
     "welcomeSubtitle": "Community-powered safety for everyone",

@@ -35,7 +35,7 @@ When cases resolve, users can share their reunification story. Public feed of su
 
 ## Features
 
-### Completed (Sprint 1-3)
+### Completed (Sprint 1-4)
 
 - **Real-time alerts** - Socket.IO region-based rooms, geographic grid cells
 - **Config-driven architecture** - zero hardcoded values, all env vars
@@ -51,16 +51,18 @@ When cases resolve, users can share their reunification story. Public feed of su
 - **RTL support** - Arabic layout mirroring
 - **Language selector** - in-app language picker with 7 options
 - **Onboarding flow** - language, location, notification permissions
+- **Email verification** - 6-digit code on registration, auto-submit, resend flow
+- **Credibility scoring** - event-based points (0-100), leaderboard, configurable weights
+- **Content moderation** - flag/review/action system, role-based moderator access, ban/hide/remove
+- **In-app messaging** - secure conversations between finders and reporters, real-time via Socket.IO
 
 ### Planned
 
 - Map clustering for dense alert areas
 - Offline caching and draft reports
-- Moderation tools
-- Email verification
-- In-app messaging between finder/reporter
 - Web dashboard for law enforcement
-- Credibility scoring system
+- Community analytics and heat maps
+- Multi-photo support for reports
 
 ## Project Structure
 
@@ -70,15 +72,16 @@ SafeCircle/
 │   ├── src/
 │   │   ├── config/         # Environment-driven configuration
 │   │   ├── plugins/        # Fastify plugins (db, auth, redis, storage, queue)
-│   │   ├── routes/         # API endpoints
-│   │   ├── utils/          # Helpers (geo, notifications)
+│   │   ├── routes/         # API endpoints (auth, reports, messaging, moderation, etc.)
+│   │   ├── utils/          # Helpers (geo, notifications, credibility, moderation)
 │   │   └── workers/        # BullMQ workers (alert-sender)
 │   └── migrations/         # SQL migrations
 ├── mobile/
 │   ├── app/                # Expo Router screens
 │   │   ├── (tabs)/         # Tab navigation (home, map, report, profile)
 │   │   ├── report/         # Report screens (missing, lost, found, suspicious)
-│   │   └── alert/          # Alert detail
+│   │   ├── alert/          # Alert detail with sighting form
+│   │   └── messages/       # Conversation list + chat
 │   ├── lib/                # Shared utilities (api, config, i18n, socket, store)
 │   └── locales/            # Translation files (en, ar, ru)
 ├── docker-compose.yml
@@ -101,6 +104,10 @@ docker-compose up -d
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/001_initial.sql
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/002_verification_resolution.sql
 docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/003_device_tokens_and_roles.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/004_email_verification.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/005_credibility.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/006_moderation.sql
+docker exec -i safecircle-postgres psql -U safecircle -d safecircle < backend/migrations/007_messaging.sql
 
 # Start API
 cd backend && npm install && npm run dev
@@ -115,8 +122,10 @@ cd mobile && npm install && npx expo start
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | /api/auth/register | Register user |
+| POST | /api/auth/register | Register user (sends verification code) |
 | POST | /api/auth/login | Login |
+| POST | /api/auth/verify-email | Verify email with 6-digit code |
+| POST | /api/auth/resend-code | Resend verification code |
 | POST | /api/reports/missing | Report missing person |
 | GET | /api/reports/missing/nearby | Get nearby alerts |
 | PATCH | /api/reports/missing/:id | Update report (2-phase) |
@@ -130,6 +139,16 @@ cd mobile && npm install && npx expo start
 | POST | /api/verification/claims/:id/verify | Submit verification answers |
 | POST | /api/reports/:id/resolve | Mark resolved + share story |
 | GET | /api/stories | Public success stories feed |
+| GET | /api/credibility/score | Get credibility score + events |
+| GET | /api/credibility/leaderboard | Top users by credibility |
+| POST | /api/moderation/flags | Flag content |
+| GET | /api/moderation/flags | List flags (moderator+) |
+| PATCH | /api/moderation/flags/:id | Update flag status (moderator+) |
+| POST | /api/moderation/flags/:id/action | Take action on flag (moderator+) |
+| POST | /api/messaging/conversations | Start conversation |
+| GET | /api/messaging/conversations | List my conversations |
+| GET | /api/messaging/conversations/:id/messages | Get messages |
+| POST | /api/messaging/conversations/:id/messages | Send message |
 | GET | /api/health | Health check |
 
 ## Internationalization

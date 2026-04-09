@@ -50,6 +50,15 @@ export async function authRoutes(fastify) {
       [user.id, refreshToken]
     );
 
+    // Generate email verification code and store in DB
+    const verificationCode = String(Math.floor(100000 + Math.random() * 900000));
+    await fastify.db.query(
+      `INSERT INTO email_verifications (user_id, code, expires_at)
+       VALUES ($1, $2, NOW() + INTERVAL '${config.emailVerificationExpiryMinutes} minutes')`,
+      [user.id, verificationCode]
+    );
+    fastify.log.info({ verificationCode, email }, 'Email verification code');
+
     return { user, token, refreshToken };
   });
 
@@ -70,7 +79,7 @@ export async function authRoutes(fastify) {
     const { email, password } = request.body;
 
     const result = await fastify.db.query(
-      'SELECT id, email, name, password_hash, role FROM users WHERE email = $1 AND deleted_at IS NULL',
+      'SELECT id, email, name, password_hash, role, email_verified FROM users WHERE email = $1 AND deleted_at IS NULL',
       [email]
     );
     if (result.rows.length === 0) {
@@ -143,5 +152,96 @@ export async function authRoutes(fastify) {
     );
 
     return { token, refreshToken: newRefreshToken };
+  });
+
+  // --- Verify Email ---
+  fastify.post('/verify-email', {
+    onRequest: [fastify.authenticate],
+    schema: {
+      body: {
+        type: 'object',
+        required: ['code'],
+        properties: {
+          code: { type: 'string', minLength: config.emailVerificationCodeLength, maxLength: config.emailVerificationCodeLength },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const userId = request.user.id;
+    const { code } = request.body;
+
+    // Find a valid (non-expired) verification code for this user
+    const result = await fastify.db.query(
+      `DELETE FROM email_verifications
+       WHERE user_id = $1 AND code = $2 AND expires_at > NOW()
+       RETURNING id`,
+      [userId, code]
+    );
+
+    if (result.rows.length === 0) {
+      // Check if code existed but expired
+      const expired = await fastify.db.query(
+        'SELECT id FROM email_verifications WHERE user_id = $1 AND code = $2',
+        [userId, code]
+      );
+      if (expired.rows.length > 0) {
+        await fastify.db.query('DELETE FROM email_verifications WHERE user_id = $1 AND code = $2', [userId, code]);
+        return reply.code(410).send({ error: 'Code expired' });
+      }
+      return reply.code(400).send({ error: 'Invalid code' });
+    }
+
+    // Mark email as verified
+    await fastify.db.query(
+      'UPDATE users SET email_verified = true WHERE id = $1',
+      [userId]
+    );
+
+    // Clean up any remaining codes for this user
+    await fastify.db.query(
+      'DELETE FROM email_verifications WHERE user_id = $1',
+      [userId]
+    );
+
+    return { verified: true };
+  });
+
+  // --- Resend Verification Code ---
+  fastify.post('/resend-code', {
+    onRequest: [fastify.authenticate],
+    config: { rateLimit: { max: config.authRateLimit, timeWindow: '1 minute' } },
+  }, async (request, reply) => {
+    const userId = request.user.id;
+
+    // Check if already verified
+    const user = await fastify.db.query(
+      'SELECT email, email_verified FROM users WHERE id = $1 AND deleted_at IS NULL',
+      [userId]
+    );
+    if (user.rows.length === 0) {
+      return reply.code(404).send({ error: 'User not found' });
+    }
+    if (user.rows[0].email_verified) {
+      return reply.code(400).send({ error: 'Email already verified' });
+    }
+
+    // Invalidate old codes
+    await fastify.db.query(
+      'DELETE FROM email_verifications WHERE user_id = $1',
+      [userId]
+    );
+
+    // Generate and store new code
+    const verificationCode = String(Math.floor(100000 + Math.random() * 900000));
+    await fastify.db.query(
+      `INSERT INTO email_verifications (user_id, code, expires_at)
+       VALUES ($1, $2, NOW() + INTERVAL '${config.emailVerificationExpiryMinutes} minutes')`,
+      [userId, verificationCode]
+    );
+
+    const email = user.rows[0].email;
+    fastify.log.info({ verificationCode, email }, 'Email verification code');
+
+    return { sent: true };
   });
 }
